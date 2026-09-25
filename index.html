@@ -2,6 +2,8 @@
 
 
 
+
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -642,7 +644,7 @@ function update(dt){if(S.gameOver||S.paused)return;const dtt=dt*S.speed;if(!S.ru
   let shotWrite=0;for(const s of S.shots){s.ttl-=dtt;if(s.ttl>0)S.shots[shotWrite++]=s}S.shots.length=shotWrite;let fxWrite=0;for(const f of S.fx){f.life-=dtt;f.x+=f.vx*dtt;f.y+=f.vy*dtt;if(f.life>0)S.fx[fxWrite++]=f}S.fx.length=fxWrite;updateIndigestion(dtt);
 }
 
-function setMsg(t){S.messageTimer=3;ui.msg.textContent=t}
+function setMsg(t){if(S.courseNotice&&S.elapsed<S.courseNotice.until&&t!==S.courseNotice.text)return;S.messageTimer=3;ui.msg.textContent=t}
 
 function openModal(title,html){ui.modalTitle.textContent=title;ui.modalBody.innerHTML=html;ui.modal.classList.add('open');ui.modal.setAttribute('aria-hidden','false')}
 function openSettings(){openModal('⚙️ 설정',`<p>배경음악과 효과음에 함께 적용되는 마스터 볼륨입니다.</p><label for="volumeRange">🔊 볼륨</label><input id="volumeRange" class="settingsRange" type="range" min="0" max="100" value="${Math.round(masterVolume*100)}"><output id="volumeValue" class="settingsValue">${Math.round(masterVolume*100)}%</output>`);const range=document.getElementById('volumeRange'),value=document.getElementById('volumeValue');range.oninput=()=>{masterVolume=Number(range.value)/100;applyVolume();value.textContent=`${range.value}%`;try{localStorage.setItem('nutritionTdVolume',masterVolume)}catch(_){}}}
@@ -1447,7 +1449,7 @@ r5CannonBossTarget=function(t,range){r6PruneKnockMap(t);const counts=r6KnockMap(
 r5CannonKick=function(t,target){const counts=r6KnockMap(t),used=counts.get(target.r6Id)||0,now=S.compatElapsed||0;r5CannonFire(t,target,t.level>=10?2:1.5,false);if(used<2&&(target.knockImmuneUntil||0)<=now){const huge=['malatang','spicyMalatang','gluttonKing','lastBanquet'].includes(target.type);r5Backtrack(target,t.level>=10?(huge?3:5):(huge?1:3));target.knockImmuneUntil=now+10;counts.set(target.r6Id,used+1)}t.cannonKickCD=8};
 r5ProcessCannonEvents=function(){const events=S.cannonEvents||[],now=S.compatElapsed||0;let write=0;for(let i=0;i<events.length;i++){const event=events[i];if(event.due>now){events[write++]=event;continue}if(!S.towers.includes(event.source))continue;if(event.kind==='blast')r5CannonArea(event.source,event.x,event.y,event.raw,event.radius,null);else if(event.kind==='salvo'){const target=findTarget(event.source,event.source.range*(1+getBuff(event.source).range));if(target)r5CannonFire(event.source,target,.40,false)}}events.length=write};
 r5UpdateCannon=function(t,buff,legacyDt){t.cannonKickCD=Math.max(0,(t.cannonKickCD||0)-legacyDt);r6PruneKnockMap(t);const range=t.range*(1+buff.range);if(t.level>=9&&t.cannonKickCD<=0){const boss=r5CannonBossTarget(t,range);if(boss){r5CannonKick(t,boss);t.cool=Math.max(.1,t.rate/(1+buff.rate));return}}if(t.cool>0)return;const target=findTarget(t,range);if(!target)return;t.cool=Math.max(.1,t.rate/(1+buff.rate));t.cannonShots=(t.cannonShots||0)+1;r5CannonFire(t,target,1,true);if(t.level>=7&&t.cannonShots%4===0){const q=S.cannonEvents||(S.cannonEvents=[]),now=S.compatElapsed||0;q.push({kind:'salvo',due:now+.12,source:t});q.push({kind:'salvo',due:now+.24,source:t})}};
-update=function(dt){if(S.gameOver||S.paused)return;const cannonShotStart=S.shots.length,cannonFxStart=S.fx.length;const gameDt=Math.max(0,Number(dt)||0)*Math.max(1,Number(S.speed)||1),legacyDt=r7ToLegacySeconds(gameDt);S.elapsed+=gameDt;S.compatElapsed=(S.compatElapsed||0)+legacyDt;S.skillCD=Math.max(0,S.skillCD-legacyDt);S.globalStun=Math.max(0,S.globalStun-legacyDt);S.globalBuff=Math.max(0,S.globalBuff-legacyDt);S.globalAcid=Math.max(0,S.globalAcid-legacyDt);S.discount=Math.max(0,S.discount-legacyDt/45*.2);S.shake=Math.max(0,S.shake-legacyDt);if(S.roulette&&(S.roulette.timer-=legacyDt)<=0)S.roulette=null;if(S.alert&&(S.alert.timer-=legacyDt)<=0)S.alert=null;if(!S.running&&S.autoStart&&S.roundReady&&(S.autoTimer-=legacyDt)<=0)startRound();if(S.running){S.gold+=2*legacyDt;S.spawnTimer-=gameDt;if(S.spawnQueue.length&&S.spawnTimer<=0){const entry=S.spawnQueue.shift();spawnOne(entry);S.spawnTimer+=Math.max(.25,entry.delay??.25)}}for(const e of S.enemies){if(e.dead)continue;e.fieldAge=(e.fieldAge||0)+gameDt;e.stun=Math.max(0,e.stun-legacyDt);e.slow=Math.max(0,e.slow-legacyDt);e.blocked=Math.max(0,(e.blocked||0)-legacyDt);e.splitFlash=Math.max(0,(e.splitFlash||0)-legacyDt);e.bossBadge=Math.max(0,(e.bossBadge||0)-legacyDt);e.vulnerable=Math.max(0,(e.vulnerable||0)-legacyDt);e.emulsified=Math.max(0,(e.emulsified||0)-legacyDt);e.enteritisPurify=Math.max(0,(e.enteritisPurify||0)-legacyDt);if(e.digesting){e.digesting-=legacyDt;const mouth=e.digestSource;e.digestX+=(mouth.x-e.digestX)*Math.min(1,legacyDt*2.3);e.digestY+=(mouth.y-e.digestY)*Math.min(1,legacyDt*2.3);if(e.digesting<=0)r3CompleteDigestion(e);continue}if(S.globalStun>0){if(e.boss)r4ApplySlow(e,.8,S.globalStun,'medicine');else e.stun=Math.max(e.stun,S.globalStun)}if(e.stun>0||e.blocked>0)continue;const purified=e.enteritisPurify>0||purifiedByProbiotic(e),enteritisSpeed=e.enteritis&&!purified?1.5:1;e.t+=e.speed*roundMult().speed*enteritisSpeed*r4SlowMultiplier(e)*legacyDt/7600;if(e.t>=1){recordEnemyEscaped(e);e.dead=true;e.deathResolved=true;if(!S.sandbox){S.lives-=lifeLoss(e);if(S.lives<=0)return gameOver()}}}banquetAdvance();absorbBeforeCombat();perfBeginCombat();for(const t of S.towers){const d=TOWER_DEFS[t.type],buff=getBuff(t);t.cool-=legacyDt;if(t.type==='atp'){if(S.running){t.farm+=legacyDt;if(t.farm>=4){t.farm=0;S.gold+=28*(1+(t.level-1)*.55)*(t.level===5?3:1);burst(t.x,t.y,'#ffe27c',7)}}continue}if(t.type==='mouth'&&t.level===6){cadenceDigestStep(t,legacyDt);continue}if(t.type==='digestCannon'){r5UpdateCannon(t,buff,legacyDt);continue}if(t.type==='digestionKing'){kingAttackStep(t,buff);continue}cadenceAttackStep(t,buff,d);}r5ProcessCannonEvents();for(const e of S.enemies)if(!e.dead&&e.hp<=0)resolveDeath(e);let ew=0;for(const e of S.enemies)if(!e.dead)S.enemies[ew++]=e;S.enemies.length=ew;let sw=0;for(let si=0;si<S.shots.length;si++){const s=S.shots[si];if(si<cannonShotStart)s.ttl-=legacyDt;if(s.ttl>0)S.shots[sw++]=s}S.shots.length=sw;let fw=0;for(let fi=0;fi<S.fx.length;fi++){const f=S.fx[fi];if(fi<cannonFxStart)f.life-=legacyDt;f.x+=f.vx*legacyDt;f.y+=f.vy*legacyDt;if(f.life>0)S.fx[fw++]=f}S.fx.length=fw;perf.combat=false;if(S.running&&!(S.banquetDeployments||[]).length&&!S.spawnQueue.length&&!S.enemies.length&&!(S.cannonEvents||[]).length)nextRound();updateIndigestion(gameDt)};
+update=function(dt){if(S.gameOver||S.paused)return;const cannonShotStart=S.shots.length,cannonFxStart=S.fx.length;const gameDt=Math.max(0,Number(dt)||0)*Math.max(1,Number(S.speed)||1),legacyDt=r7ToLegacySeconds(gameDt);S.elapsed+=gameDt;S.compatElapsed=(S.compatElapsed||0)+legacyDt;S.skillCD=Math.max(0,S.skillCD-legacyDt);S.globalStun=Math.max(0,S.globalStun-legacyDt);S.globalBuff=Math.max(0,S.globalBuff-legacyDt);S.globalAcid=Math.max(0,S.globalAcid-legacyDt);S.discount=Math.max(0,S.discount-legacyDt/45*.2);S.shake=Math.max(0,S.shake-legacyDt);if(S.roulette&&(S.roulette.timer-=legacyDt)<=0)S.roulette=null;if(S.alert&&(S.alert.timer-=legacyDt)<=0)S.alert=null;if(!S.running&&S.autoStart&&S.roundReady&&(S.autoTimer-=legacyDt)<=0)startRound();if(S.banquetPrompt||S.paused)return;if(S.running){S.gold+=2*legacyDt;S.spawnTimer-=gameDt;if(S.spawnQueue.length&&S.spawnTimer<=0){const entry=S.spawnQueue.shift();spawnOne(entry);S.spawnTimer+=Math.max(.25,entry.delay??.25)}}for(const e of S.enemies){if(e.dead)continue;e.fieldAge=(e.fieldAge||0)+gameDt;e.stun=Math.max(0,e.stun-legacyDt);e.slow=Math.max(0,e.slow-legacyDt);e.blocked=Math.max(0,(e.blocked||0)-legacyDt);e.splitFlash=Math.max(0,(e.splitFlash||0)-legacyDt);e.bossBadge=Math.max(0,(e.bossBadge||0)-legacyDt);e.vulnerable=Math.max(0,(e.vulnerable||0)-legacyDt);e.emulsified=Math.max(0,(e.emulsified||0)-legacyDt);e.enteritisPurify=Math.max(0,(e.enteritisPurify||0)-legacyDt);if(e.digesting){e.digesting-=legacyDt;const mouth=e.digestSource;e.digestX+=(mouth.x-e.digestX)*Math.min(1,legacyDt*2.3);e.digestY+=(mouth.y-e.digestY)*Math.min(1,legacyDt*2.3);if(e.digesting<=0)r3CompleteDigestion(e);continue}if(S.globalStun>0){if(e.boss)r4ApplySlow(e,.8,S.globalStun,'medicine');else e.stun=Math.max(e.stun,S.globalStun)}if(e.stun>0||e.blocked>0)continue;const purified=e.enteritisPurify>0||purifiedByProbiotic(e),enteritisSpeed=e.enteritis&&!purified?1.5:1;e.t+=e.speed*roundMult().speed*enteritisSpeed*r4SlowMultiplier(e)*legacyDt/7600;if(e.t>=1){recordEnemyEscaped(e);e.dead=true;e.deathResolved=true;if(!S.sandbox){S.lives-=lifeLoss(e);if(S.lives<=0)return gameOver()}}}banquetAdvance();absorbBeforeCombat();perfBeginCombat();for(const t of S.towers){const d=TOWER_DEFS[t.type],buff=getBuff(t);t.cool-=legacyDt;if(t.type==='atp'){if(S.running){t.farm+=legacyDt;if(t.farm>=4){t.farm=0;S.gold+=28*(1+(t.level-1)*.55)*(t.level===5?3:1);burst(t.x,t.y,'#ffe27c',7)}}continue}if(t.type==='mouth'&&t.level===6){cadenceDigestStep(t,legacyDt);continue}if(t.type==='digestCannon'){r5UpdateCannon(t,buff,legacyDt);continue}if(t.type==='digestionKing'){kingAttackStep(t,buff);continue}cadenceAttackStep(t,buff,d);}r5ProcessCannonEvents();for(const e of S.enemies)if(!e.dead&&e.hp<=0)resolveDeath(e);let ew=0;for(const e of S.enemies)if(!e.dead)S.enemies[ew++]=e;S.enemies.length=ew;let sw=0;for(let si=0;si<S.shots.length;si++){const s=S.shots[si];if(si<cannonShotStart)s.ttl-=legacyDt;if(s.ttl>0)S.shots[sw++]=s}S.shots.length=sw;let fw=0;for(let fi=0;fi<S.fx.length;fi++){const f=S.fx[fi];if(fi<cannonFxStart)f.life-=legacyDt;f.x+=f.vx*legacyDt;f.y+=f.vy*legacyDt;if(f.life>0)S.fx[fw++]=f}S.fx.length=fw;perf.combat=false;if(S.running&&!(S.banquetDeployments||[]).length&&!S.spawnQueue.length&&!S.enemies.length&&!(S.cannonEvents||[]).length)nextRound();updateIndigestion(gameDt)};
 
 /* Build / selected-tower text: Lv6 remains a hidden fifth-level upgrade, while
    automatic probiotic growth keeps its own wording. */
@@ -1569,6 +1571,7 @@ function r8SubjectParticle(value){
   return ((syllables.at(-1).charCodeAt(0)-0xac00)%28)===0?'가':'이';
 }
 function r8RenderNamedIntro(type,suffix){
+  if(S.courseNotice&&S.elapsed<S.courseNotice.until)return true;
   const d=ENEMY_DEFS[type];if(!d)return false;
   const name=document.createElement('strong');name.textContent=d.name;name.style.color='#FFD166';name.style.fontWeight='900';
   ui.msg.replaceChildren(name,document.createTextNode(suffix===undefined?`${r8SubjectParticle(d.name)} 처음 출현합니다.`:suffix));
@@ -1583,7 +1586,7 @@ r5NoticeName=function(type,tail){
   S.seenNotices[key]=true;
   return r8RenderNamedIntro(type,tail);
 };
-function r8RenderIntroText(text){ui.msg.textContent=text;S.messageTimer=0}
+function r8RenderIntroText(text){if(S.courseNotice&&S.elapsed<S.courseNotice.until)return;ui.msg.textContent=text;S.messageTimer=0}
 const R8_FIRST_TYPES={1:'glucose',2:'maltose',4:'starch',6:'amino',7:'peptide',8:'protein',9:'oyster',13:'fatty',14:'fatStage3',15:'fatblob',17:'spicyOyster'};
 const R8_EVENT_TEXT={
   21:'가벼운 영양소가 등장하는 정비 라운드입니다.',28:'빠른 굴이 연속으로 등장합니다.',30:'장염으로 소화관 운동이 빨라집니다.',38:'매운 굴이 연속으로 등장합니다.',
@@ -1842,15 +1845,18 @@ deal=function(e,raw,t){
 
 /* Cannon direct hits, splash, delayed blasts and salvos all meet here once. */
 r5CannonArea=function(t,x,y,raw,radius,direct){
-  const radiusPx=radius*gridSize;
+  const radiusPx=radius*gridSize;let lineageDeath=false;
   for(const e of perfNearby(x,y,radiusPx)){
-    if(e.dead||e.digesting||e.hp<=0)continue;
+    if(e.dead||e.digesting||e.feastLocked||e.hp<=0)continue;
     const point=perfPosition(e),distance=Math.hypot(point.x-x,point.y-y);
     if(distance>radiusPx)continue;
     let factor=1;
     if(e!==direct){const near=t.level>=3?.75:.60,far=t.level>=3?.40:.30;factor=near-(near-far)*(distance/radiusPx)}
-    r9Hit(e,raw*factor,t);
+    const bossMultiplier=e.boss?1+.05*Math.max(0,(t.level||1)-1):1;
+    e.hp-=r5DamageAmount(e,raw*factor*bossMultiplier,t);e.lastHitType='digestCannon';e.hit=.11;absorbCommit(e);
+    if(e.hp<=0&&(Number.isInteger(e.courseIndex)||e.feastSummonToken))lineageDeath=true;
   }
+  if(lineageDeath)v14RefreshLocks();
   S.fx.push({kind:'cannonBlast',x,y,vx:0,vy:0,r:radiusPx,life:.28,color:'#ffb35e'});
 };
 
@@ -2402,7 +2408,7 @@ function perfDrawEnemies(enemies) {
     ctx.save(); ctx.translate(p.x, p.y);
     const total = e.digestTotal || (e.boss ? 5 : 3.5);
     const ds = e.digesting ? Math.max(.25, e.digesting / total) : 1;
-    ctx.scale(ds, ds);
+    ctx.scale(ds*(e.feastArtScale||1), ds*(e.feastArtScale||1));
     const r = (e.boss ? 29 : 10.5 + e.tier * 2.35) * e.size, ratio = e.hp / e.maxHp;
     const filter = e.type==='lastBanquet' ? 'none' : e.boss && ratio <= .33 ? 'grayscale(1) brightness(.67)' :
       e.boss && ratio <= .66 ? 'grayscale(.6) brightness(.85)' : 'none';
@@ -2412,6 +2418,7 @@ function perfDrawEnemies(enemies) {
     if (!cache) {
       const half = Math.ceil(r + 18), {surface, context} = perfSurface(half * 2, half * 2);
       perfWriteStyle(context, perfReadStyle(ctx));
+      context.globalAlpha = 1; // Live opacity must never be baked into shared sprites.
       context.translate(half, half); context.filter = filter;
       // Bake body AND face into each of the three HP appearances once per key.
       // Never replay grayscale/brightness over face paths on the main canvas.
@@ -3332,12 +3339,12 @@ function absorbMaxLevel(type){return type==='villus'?10:5}
 const ABSORB_STATS={
   capillary:{damage:[4,7,11,16,23],range:[2.4,2.5,2.6,2.7,2.8],rate:[.18,.18,.18,.18,.18]},
   lacteal:{damage:[34,50,75,110,160],range:[3,3.1,3.2,3.3,3.4],rate:[2.1,2.025,1.95,1.875,1.8]},
-  villus:{damage:[950,1700,2800,4150,5700,7500,9500,11700,14100,16600],range:[3,3.5,4.3,5.1,6,7.1,8.3,9.5,10.7,12],rate:[.9,.87,.84,.81,.78,.75,.72,.69,.65,.6]}
+  villus:{damage:[836,1496,2464,3652,5016,6600,8360,10296,12408,14608],range:[3,3.5,4.3,5.1,6,7.1,8.3,9.5,10.7,12],rate:[.9,.87,.84,.81,.78,.75,.72,.69,.65,.6]}
 };
 Object.assign(TOWER_DEFS,{
   capillary:{name:'모세혈관',short:'빠른 단일 흡수',group:'고급',icon:'🩸',color:'#ff779c',cost:300,damage:4,range:2.4,rate:.18,type:'attack',desc:'설치 이후 전 맵 실제 피해로 자동 성장 · 최대 Lv5. Lv5부터 보스 피해 +15%. 모세혈관 Lv5 + 암죽관 Lv5 → 융털.',awaken:'전 맵 피해로 성장'},
   lacteal:{name:'암죽관',short:'느린 범위 흡수',group:'고급',icon:'💧',color:'#83efd0',cost:300,damage:34,range:3,rate:2.1,type:'attack',desc:'1.1타일 범위 흡수 · 전 맵 실제 피해로 자동 성장 · 최대 Lv5. Lv5부터 보스 피해 +15%. 모세혈관 Lv5 + 암죽관 Lv5 → 융털.',awaken:'전 맵 피해로 성장'},
-  villus:{name:'융털',short:'후방 특화 합성',group:'합성',icon:'🌿',color:'#ffe3a1',cost:0,damage:950,range:3,rate:.9,type:'attack',desc:'뒤쪽에 설치해 출구로 향하는 적 한 마리를 흡수합니다. 같은 레벨 2개를 수동 합성해 성장. 보유 제한: Lv1~9는 각 레벨당 최대 2개, Lv10 융털은 1개만 보유할 수 있습니다.',awaken:'Lv5 긴급 흡수 강화 · Lv7 저체력 흡수 · Lv10 장거리 흡수'}
+  villus:{name:'융털',short:'후방 특화 합성',group:'합성',icon:'🌿',color:'#ffe3a1',cost:0,damage:836,range:3,rate:.9,type:'attack',desc:'뒤쪽에 설치해 출구로 향하는 적 한 마리를 흡수합니다. 같은 레벨 2개를 수동 합성해 성장. 보유 제한: Lv1~9는 각 레벨당 최대 2개, Lv10 융털은 1개만 보유할 수 있습니다.',awaken:'Lv5 긴급 흡수 강화 · Lv7 저체력 흡수 · Lv10 장거리 흡수'}
 });
 function absorbCommit(e){
   if(!e||e.deploying)return;
@@ -3372,7 +3379,9 @@ resolveDeath=function(e){absorbCommit(e);return absorbDeath(e)};
 awakenTower=function(t){try{return absorbAwaken(t)}finally{absorbFlush()}};
 function absorbSetLevel(t,level){
   const stats=ABSORB_STATS[t.type];if(!stats)return;
+  const previous=t.level;
   t.level=Math.max(1,Math.min(absorbMaxLevel(t.type),level));const i=t.level-1;
+  if(t.type==='villus'&&t.level===10&&previous!==10)t.villusFullReady=S.elapsed+7;
   t.damage=t.damageBase=stats.damage[i];t.rangeTiles=stats.range[i];t.range=t.rangeTiles*gridSize;t.rate=stats.rate[i];
 }
 const absorbCreate=createTower;
@@ -3399,6 +3408,7 @@ function absorbBeforeCombat(){
 }
 const absorbCadence=cadenceAttackStep;
 cadenceAttackStep=function(t,buff,def){
+  if(t.type==='villus'&&t.level===10)v14FullAbsorb(t,buff);
   if(t.type==='villus'&&t.level>=5&&(S.absorbEmergencyUntil||0)>S.elapsed)buff={...buff,rate:buff.rate+.25};
   return absorbCadence(t,buff,def);
 };
@@ -3609,11 +3619,13 @@ perfPaintEnemyBody=function(e,r,face){
   ctx.restore();if(face)drawCartoonFace(e,r);
 };
 function banquetRequireStart(round,action){
-  if(round!==110&&round!==111)return false;
+  if(round!==110&&round!==111&&round!==112)return false;
   if(S.banquetApproved?.[round])return false;
   if(S.banquetPrompt)return true;
   const state=S;S.banquetPrompt={round};
-  openModal('🍽️ 최후의 만찬',`<p style="font-size:18px;line-height:1.7">${round===110?'최후의 만찬을 음미하시오.':'다시 한번 최후의 만찬이 차려졌습니다. 살아남으십시오.'}</p><div class="modalActions"><button id="banquetStart" class="modalBtn primary">만찬 시작</button></div>`);
+  const course=round>=111;
+  const text=round===110?'최후의 만찬을 음미하시오.':round===111?'코스 요리가 시작됩니다. 앞선 접시부터 차례대로 비우십시오.':'천천히 먹는 시간이 끝났습니다. 만찬이 조금씩 가속됩니다.';
+  openModal(course?'코스 요리':'🍽️ 최후의 만찬',`<p style="font-size:18px;line-height:1.7">${text}</p><div class="modalActions"><button id="banquetStart" class="modalBtn primary">${course?'코스 요리 시작':'만찬 시작'}</button></div>`);
   document.getElementById('banquetStart').onclick=()=>{
     if(S!==state||!S.banquetPrompt)return;
     (S.banquetApproved||(S.banquetApproved={}))[round]=true;S.banquetPrompt=null;closeModal();action();
@@ -3641,7 +3653,10 @@ function banquetClear(){S.banquetDeployments=[];S.banquetFloors=null;S.cannonEve
 const banquetClearButton=ui.clearNutrients.onclick;
 ui.clearNutrients.onclick=function(){if(S.sandbox)banquetClear();return banquetClearButton()};
 const banquetSandboxRound=r3SandboxRound;
-r3SandboxRound=function(){const n=Number(document.getElementById('sandboxRoundInput').value);if(S.sandbox&&Number.isInteger(n)&&n>=1&&n<=999)banquetClear();return banquetSandboxRound()};
+r3SandboxRound=function(){const n=Number(document.getElementById('sandboxRoundInput').value);if(S.sandbox&&Number.isInteger(n)&&n>=1&&n<=999){
+  if(S.banquetPrompt){S.banquetPrompt=null;closeModal()}
+  banquetClear();S.seenNotices={};S.seenBosses={};S.banquetApproved={};S.courseNotices=[];S.courseNotice=null;S.alert=null;S.r8IntroPlan=null;
+}return banquetSandboxRound()};
 document.getElementById('sandboxRoundGo').onclick=()=>r3SandboxRound();
 const banquetButton=document.createElement('button');banquetButton.className='sandboxBtn';banquetButton.dataset.spawn='lastBanquet';banquetButton.textContent='🍽️ 최후의 만찬';
 banquetButton.onclick=()=>{if(!S.sandbox)return;const e=enemy('lastBanquet',{wave:Math.max(110,S.round)});e.t=.015;S.enemies.push(e);setMsg('최후의 만찬을 소환했습니다.')};
@@ -3741,6 +3756,33 @@ function villusProgressBonus(t,e){
   const end=banquetSegments().horizontals.at(-1).end;
   return absorbClamp((e.t-.35)/(end-.35))*(.45+.45*(t.level-1)/9);
 }
+function v14VillusGold(t,damage,full){
+  const key=full?'villusFullRemainder':'villusGoldRemainder',unit=full?1000:2000;
+  const total=(t[key]||0)+damage,gold=Math.floor(total/unit);
+  t[key]=total-gold*unit;S.gold+=gold;
+  if(full)t.villusFullGold=(t.villusFullGold||0)+gold;
+}
+function v14FullAbsorb(t,buff){
+  if(t.villusFullReady===undefined)t.villusFullReady=S.elapsed+7;
+  if(S.elapsed<t.villusFullReady)return;
+  const targets=t.villusFullTargets||(t.villusFullTargets=[]);targets.length=0;
+  const radius=t.range*(1+(buff.range||0));
+  for(const e of perfNearby(t.x,t.y,radius)){
+    if(e.dead||e.digesting||e.deploying||e.feastLocked||e.hp<=0)continue;
+    const p=perfPosition(e);if(!perfWithin(p.x-t.x,p.y-t.y,radius))continue;
+    targets.push(e);if(targets.length===8)break;
+  }
+  if(!targets.length){t.villusFullReady=S.elapsed+.15;return}
+  t.villusFullReady=S.elapsed+7;t.villusFullLife=.9;t.villusFullGold=0;t.villusFullActive=true;
+  try{for(const e of targets)r9Hit(e,30000,t)}finally{t.villusFullActive=false}
+}
+function v14DrawFullAbsorb(t){
+  if(!(t.villusFullLife>0))return;
+  ctx.save();ctx.globalAlpha=Math.min(1,t.villusFullLife/.2);ctx.strokeStyle='#a5ffe0';ctx.lineWidth=2;ctx.beginPath();
+  for(const e of t.villusFullTargets||[]){const p=perfPosition(e);ctx.moveTo(p.x,p.y);ctx.lineTo(t.x,t.y)}
+  ctx.stroke();ctx.strokeStyle='#fff0b3';ctx.beginPath();ctx.arc(t.x,t.y,22+(1-t.villusFullLife/.9)*8,0,TAU);ctx.stroke();
+  ctx.fillStyle='#fff0a0';ctx.font='bold 12px system-ui';ctx.textAlign='center';ctx.fillText('+'+(t.villusFullGold||0)+'G',t.x,t.y-32-(.9-t.villusFullLife)*12);ctx.restore();
+}
 function villusSkillDescription(t){
   const rear=Math.round((.8+.2*(t.level-1)/9)*100),end=Math.round((.45+.45*(t.level-1)/9)*100);
   const lines=[`<b>후방 배치</b>: 뒤쪽에 설치할수록 피해 증가. 마지막 가로길 높이부터 최대 +${rear}%.`];
@@ -3748,6 +3790,8 @@ function villusSkillDescription(t){
   if(t.level>=5)lines.push('<b>긴급 흡수</b>: 마지막 가로길에 적이 오면 Lv5 이상 융털의 공속 +25%. 6게임초 지속 · 공용 주기 18게임초.');
   if(t.level>=7)lines.push(`<b>저체력 흡수</b>: HP 66% 이하 +${t.level===10?25:15}%, 33% 이하 +${t.level===10?50:30}% 피해.`,`<b>흡수 파동</b>: 주 대상 주변 ${villusSplashRadius(t).toFixed(2)}타일의 가까운 적 최대 2명에게 ${Math.round(villusSplashRatio(t)*100)}% 보조 피해.`);
   const boss=r9TowerBossBonus(t);if(boss>0)lines.push(`보스에게 추가 피해 +${Math.round(boss*100)}%.`);
+  lines.push('<b>피해 흡수 수입</b>: 실제 피해 2,000당 1G. 남은 피해는 이월합니다.');
+  if(t.level===10)lines.push('<b>전면 흡수</b>: 7게임초마다 사거리 내 최대 8명에게 기본 피해 30,000을 1회 적용합니다. 기존 피해 보정 적용. 실제 피해 1,000당 1G.');
   return lines.map(line=>`<p>${line}</p>`).join('');
 }
 function villusDrawCore(c,level,scale=1){
@@ -3802,12 +3846,12 @@ addShot=function(t,e,...args){
 const villusUpdate=update;
 update=function(dt){
   if(S.paused||S.gameOver)return;
-  for(const t of S.towers){const v=t.villusShot;if(v?.life>0){v.age+=dt;v.life=Math.max(0,v.life-dt);if(!v.life)v.target=null}}
+  for(const t of S.towers){if(t.villusFullLife>0){t.villusFullLife=Math.max(0,t.villusFullLife-dt);if(!t.villusFullLife)t.villusFullTargets.length=0}const v=t.villusShot;if(v?.life>0){v.age+=dt;v.life=Math.max(0,v.life-dt);if(!v.life)v.target=null}}
   return villusUpdate(dt);
 };
 const villusDrawShots=drawShots;
 drawShots=function(){
-  villusDrawShots();ctx.save();
+  villusDrawShots();for(const t of S.towers)v14DrawFullAbsorb(t);ctx.save();
   for(const t of S.towers){
     const v=t.villusShot;if(!v||v.life<=0)continue;
     if(v.target&&!v.target.dead){const p=perfPosition(v.target);v.tx=p.x;v.ty=p.y}
@@ -3840,8 +3884,8 @@ const banquetAncestry=new WeakMap();
 function banquetOrigin(e){return e.banquetWave??e.recordWave??banquetAncestry.get(e)??e.wave}
 // Rendered boss circles use 29 * size CSS pixels (not grid tiles). Cache the
 // first forward intersection per leader/path so followers never scan the path.
-function banquetLeaderFloor(leader){
-  const radius=29*(leader.size+Math.max(ENEMY_DEFS.gluttonKing.size,ENEMY_DEFS.malatang.size,ENEMY_DEFS.spicyMalatang.size))+3;
+function banquetLeaderFloor(leader,clearance){
+  const radius=clearance??29*(leader.size+Math.max(ENEMY_DEFS.gluttonKing.size,ENEMY_DEFS.malatang.size,ENEMY_DEFS.spicyMalatang.size))+3;
   const cached=leader.feastSpacing;
   if(cached?.path===path&&cached.t===leader.t&&cached.radius===radius)return cached.floor;
   const center=pointAt(leader.t),n=path.length-1,r2=radius*radius;
@@ -3864,7 +3908,7 @@ function banquetLeaderFloor(leader){
 function banquetVisiblePosition(e,p){
   if(!e.boss||e.type==='lastBanquet'||e.deploying||e.digesting)return p;
   const leader=S.feastLeaders?.get(banquetOrigin(e));if(!leader||leader.dead)return p;
-  const c=perfPosition(leader),radius=29*(leader.size+e.size)+3,dx=p.x-c.x,dy=p.y-c.y,d2=dx*dx+dy*dy;
+  const c=perfPosition(leader),radius=29*(leader.size+e.size*(e.feastArtScale||1))+3,dx=p.x-c.x,dy=p.y-c.y,d2=dx*dx+dy*dy;
   if(d2>=radius*radius-1e-6)return p;
   let ux=dx,uy=dy,length=Math.sqrt(d2);
   if(length<1e-6){const next=pointAt(Math.min(1,leader.t+.001));ux=next.x-c.x;uy=next.y-c.y;length=Math.hypot(ux,uy)||1;if(!ux&&!uy)uy=1}
@@ -3878,8 +3922,12 @@ function banquetRemainsFloor(e,from){
 }
 function banquetClampFloor(e,from=e.t){
   if(e.type==='lastBanquet')return;
+  if(e.feastPhaseMember){
+    const floor=Math.max(e.feastPhaseFloor||0,banquetRemainsFloor(e,from));
+    if(e.t<floor){e.t=floor;perf.grid=null}return;
+  }
   const leader=S.feastLeaders?.get(banquetOrigin(e));
-  const floor=Math.max(S.banquetFloors?.get(banquetOrigin(e))??0,banquetRemainsFloor(e,from),leader&&!leader.dead?banquetLeaderFloor(leader):0);
+  const floor=Math.max(S.banquetFloors?.get(banquetOrigin(e))??0,banquetRemainsFloor(e,from),leader&&!leader.dead&&e.t<from&&from>=leader.t?banquetLeaderFloor(leader):0);
   if(floor!==undefined&&e.t<floor){e.t=floor;perf.grid=null}
 }
 function banquetSetFloor(e){
@@ -3891,7 +3939,7 @@ function banquetSetFloor(e){
 const banquetV2Enemy=enemy;
 enemy=function(type,options){
   const e=banquetV2Enemy(type,options);
-  if(type==='lastBanquet'){e.hp=e.maxHp=Math.round(ENEMY_DEFS.lastBanquet.hp*Math.pow(1.10,Math.max(0,e.wave-110)));e.absorbHP=e.hp}
+  if(type==='lastBanquet'){e.hp=e.maxHp=Math.round(ENEMY_DEFS.lastBanquet.hp*(e.wave>=111?1.10*(1+.05*(e.wave-111)):1));e.absorbHP=e.hp}
   if(banquetV2Parent)banquetAncestry.set(e,banquetOrigin(banquetV2Parent));
   return e;
 };
@@ -4161,7 +4209,7 @@ canvas.addEventListener('click',event=>{
   // Match the visible draw order: banquet is on top of its summoned bosses.
   for(let i=S.enemies.length-1;i>=0;i--){const e=S.enemies[i];if(e.type!=='lastBanquet'||e.dead)continue;const p=perfPosition(e);if(perfWithin(p.x-x,p.y-y,29*e.size)){v13MultiBuild(false);showEnemyInfo(e);return}}
   for(let i=S.towers.length-1;i>=0;i--){const t=S.towers[i];if(perfWithin(t.x-x,t.y-y,Math.max(23,gridSize*.4))){v13MultiBuild(false);showTowerInfo(t);return}}
-  for(let i=S.enemies.length-1;i>=0;i--){const e=S.enemies[i];if(e.dead)continue;const p=banquetVisiblePosition(e,perfPosition(e));if(perfWithin(p.x-x,p.y-y,e.boss?29*e.size:gridSize*.35)){v13MultiBuild(false);showEnemyInfo(e);return}}
+  for(let i=S.enemies.length-1;i>=0;i--){const e=S.enemies[i];if(e.dead)continue;const p=banquetVisiblePosition(e,perfPosition(e));if(perfWithin(p.x-x,p.y-y,e.boss?29*e.size*(e.feastArtScale||1):gridSize*.35*(e.feastArtScale||1))){v13MultiBuild(false);showEnemyInfo(e);return}}
   clearSelection('빈 공간을 눌러 선택을 해제했습니다.');
 },true);
 document.addEventListener('click',event=>{
@@ -4170,7 +4218,7 @@ document.addEventListener('click',event=>{
   if(event.target!==canvas)clearSelection();
 });
 const v13Start=startRound;
-startRound=function(){if(S.paused){S.paused=false;v13SyncControls();if(S.running)return}return v13Start()};
+startRound=function(){if(S.banquetPrompt)return;if(S.paused){S.paused=false;v13SyncControls();if(S.running)return}return v13Start()};
 ui.start.onclick=()=>startRound();ui.pause.onclick=()=>{if(S.gameOver)return;S.paused=!S.paused;v13SyncControls()};
 function v13SyncControls(){
   perfText(ui.pause,S.paused?'▶ 재개':'❚❚ 일시정지');perfToggle(ui.pause,'active',S.paused);perfSet(ui.pause,'disabled',S.gameOver);
@@ -4258,6 +4306,287 @@ enterGame=function(...args){v13SelectedEnemy=v13Panel=null;v13Enter(...args);v13
 restartGame=function(...args){v13SelectedEnemy=v13Panel=null;v13Restart(...args);v13MultiBuild(false);S.selectedBuild=S.selectedTower=null;switchBgm('game');v13SelectionButton();updateUI(true)};
 const v13Style=document.createElement('style');v13Style.textContent='#cancelSelection{display:block;width:100%;margin:12px 0 3px;padding:10px;border:1px solid #f399a1;border-radius:8px;background:#9a3048;color:#fff;font-weight:800;cursor:pointer}#info .upgrade:disabled{opacity:.48;cursor:not-allowed}';document.head.append(v13Style);
 buildTowerPanel();updateUI(true);
+
+/* Course lineage, feast protection and actual-damage economy. */
+const V14_COURSE_TYPES=Object.freeze([
+  'hamburger','spicyHamburger','pizza','spicyPizza','oysterBoss','spicyOysterBoss',
+  'chicken','spicyChicken','malatang','spicyMalatang','gluttonKing','lastBanquet'
+]);
+const v14RoundScale=round=>round>=111?1+.05*(round-111):1;
+
+/* 111+ uses one fixed full-course order. Difficulty rises through speed and the
+ * Last Banquet's HP rather than by changing the course contents. */
+const v14RoundEntries=makeRoundEntries;
+makeRoundEntries=function(round){
+  if(round<111)return v14RoundEntries(round);
+  return V14_COURSE_TYPES.map((type,index)=>({
+    type,wave:round,enteritis:isEnteritisRound(round),spicy:!!ENEMY_DEFS[type]?.spicy,
+    delay:.25,courseIndex:index,courseRound:round
+  }));
+};
+
+/* Rebase the Last Banquet's late-game HP on round 111.  Keep round 110 exactly
+ * as authored; from 112 onward add 5% of the 111 baseline per round (linear). */
+let v14DeathParent=null;
+const v14Enemy=enemy;
+enemy=function(type,options={}){
+  const e=v14Enemy(type,options),wave=options.wave??e.wave??S.round;
+  const parent=v14DeathParent;
+  if(parent&&parent.type!=='lastBanquet'){
+    for(const key of ['courseIndex','courseRound','feastSummonToken','feastPhaseMember','feastPhaseFloor','feastArtScale'])if(parent[key]!==undefined)e[key]=parent[key];
+  }else if(parent?.type==='lastBanquet')e.banquetAfterlife=true;
+  if(type==='lastBanquet'||Number.isInteger(e.courseIndex))v14GuardHp(e);
+  return e;
+};
+function v14ApplyCourseSpeed(e,round){
+  if(!e||e.v14CourseSpeed||round<111)return;
+  const d=ENEMY_DEFS[e.type],base=d.speed*Math.min(1.5,1+.005*Math.max(0,111-(d.unlockRound||111)));
+  Object.defineProperty(e,'speed',{configurable:true,get(){return base*v14RoundScale(round)*(e.type==='lastBanquet'?1+.08*(e.feastPhase||0):1)/roundMult().speed},set(){}});
+  e.v14CourseSpeed=v14RoundScale(round);
+}
+
+const v14SpawnOne=spawnOne;
+spawnOne=function(entry){
+  const start=S.enemies.length,result=v14SpawnOne(entry),data=typeof entry==='string'?null:entry;
+  if(data&&Number.isInteger(data.courseIndex)){
+    for(let i=start;i<S.enemies.length;i++){
+      const e=S.enemies[i];e.courseIndex=data.courseIndex;e.courseRound=data.courseRound??data.wave;
+      v14ApplyCourseSpeed(e,e.courseRound);v14GuardHp(e);
+    }
+    v14RefreshLocks();
+  }
+  return result;
+};
+
+/* Phase 66/33: follow the clarified forward path span, with five evenly
+ * spaced bosses and a bounded, distance-derived nutrient procession. */
+let v14FeastToken=0;
+let v14Metric=null;
+function v14PathMetric(){
+  if(v14Metric?.path===path)return v14Metric;
+  const distance=[0];for(let i=1;i<path.length;i++)distance.push(distance[i-1]+Math.hypot(path[i].x-path[i-1].x,path[i].y-path[i-1].y));
+  return v14Metric={path,distance};
+}
+function v14Distance(t){
+  const d=v14PathMetric().distance,f=Math.max(0,Math.min(1,t))*(d.length-1),i=Math.floor(f);
+  return d[i]+(d[Math.min(i+1,d.length-1)]-d[i])*(f-i);
+}
+function v14DistanceT(value){
+  const d=v14PathMetric().distance;let lo=0,hi=d.length-1;
+  while(lo+1<hi){const mid=(lo+hi)>>>1;if(d[mid]<value)lo=mid;else hi=mid}
+  return (lo+Math.max(0,Math.min(1,(value-d[lo])/Math.max(1e-9,d[hi]-d[lo]))))/(d.length-1);
+}
+function v14PhaseSpan(e){
+  const lane=banquetSegments().horizontals.findLast(seg=>seg.sign>0);
+  // Before the last row: Feast-front to that row's ENTRY. On that row: front to END.
+  const end=e.t<lane.start?lane.start:e.t<lane.end?lane.end:1-1e-6;
+  const right=v14Distance(end),origin=v14Distance(e.t),big=29*Math.max(ENEMY_DEFS.gluttonKing.size,ENEMY_DEFS.spicyMalatang.size);
+  let scale=1,left=origin;
+  for(let i=0;i<3;i++){
+    const front=banquetLeaderFloor(e,29*e.size+big*scale+4);
+    left=front>e.t&&front<end?v14Distance(front):origin+(right-origin)*.08;
+    scale=Math.min(1,Math.max(.04,(right-left)/(4*(big*2+120+10))));
+  }
+  return {start:v14DistanceT(left),end,left,right,scale};
+}
+function v14SpawnFeastPhase(e,phase){
+  const wave=banquetOrigin(e),span=v14PhaseSpan(e),token=`feast-${wave}-${phase}-${++v14FeastToken}`;
+  const base=phase===1?'malatang':'gluttonKing',anchors=Array.from({length:5},(_,i)=>span.left+(span.right-span.left)*i/4);
+  const old=recordCreationContext;recordCreationContext={state:S,wave:e.recordWave??wave,child:true};
+  const mark=child=>{child.banquetWave=wave;child.feastSummonToken=token;child.feastPhaseMember=true;child.feastPhaseFloor=span.start;child.feastArtScale=span.scale;child.courseIndex=undefined;return child};
+  try{
+    const bosses=[];
+    for(const x of anchors){
+      const spicy=base==='malatang'&&Math.random()<v12BossSpicyChance(base,e.wave),type=spicy?R6_SPICY_BOSS[base]:base;
+      const child=mark(enemy(type,{wave:e.wave,enteritis:e.enteritis,spicy}));child.t=v14DistanceT(x);S.enemies.push(child);bosses.push(child);
+    }
+    const kinds=['starch','protein','fatblob'],gap=40*span.scale;let kind=0;
+    for(let x=span.left+gap;x<span.right-gap*.5;x+=gap){
+      if(anchors.some((a,i)=>Math.abs(x-a)<(29*bosses[i].size+20)*span.scale+span.scale*2))continue;
+      const child=mark(enemy(kinds[kind++%3],{wave:e.wave,enteritis:e.enteritis,spicy:false}));child.t=v14DistanceT(x);S.enemies.push(child);
+    }
+  }finally{recordCreationContext=old}
+  e.feastGuardToken=token;e.phaseLocked=true;e.feastLocked=true;perf.grid=null;
+  v14RefreshLocks();
+}
+
+/* Trigger only one threshold at a time.  If one hit crosses both thresholds,
+ * the 33% course waits until the 66% summoned food has been completely cleared. */
+v13FeastPhase=function(e){
+  if(e.type!=='lastBanquet'||e.dead||e.deploying||e.feastGuardToken)return;
+  const wanted=e.hp/e.maxHp<=.33?2:e.hp/e.maxHp<=.66?1:0,current=e.feastPhase||0;
+  if(current>=wanted)return;
+  const next=current+1;e.feastPhase=next;e.color=next===1?'#ec8a30':'#d93632';
+  const wave=banquetOrigin(e);(S.feastLeaders||(S.feastLeaders=new Map())).set(wave,e);
+  v14SpawnFeastPhase(e,next);S.feastShakeUntil=performance.now()+280;
+};
+
+/* A phase lock follows all descendants of the summoned food.  Course locks use
+ * authored appearance order, never physical position, so faster bosses cannot
+ * skip ahead in the target sequence. */
+let v14RefreshingLocks=false;
+function v14RefreshLocks(){
+  if(v14RefreshingLocks||v14DeathParent)return;
+  v14RefreshingLocks=true;
+  try{
+  for(let i=0;i<S.enemies.length;i++){
+    const e=S.enemies[i];
+    if(!e.dead&&!e.deathResolved&&!e.digesting&&!e.feastLocked&&e.hp<=0&&(Number.isInteger(e.courseIndex)||e.feastSummonToken))resolveDeath(e);
+  }
+  const firstByRound=new Map(),tokens=new Set();
+  const include=e=>{
+    if(e.dead)return;
+    if(e.feastSummonToken)tokens.add(e.feastSummonToken);
+    if(!e.feastPhaseMember&&!e.banquetAfterlife&&Number.isInteger(e.courseIndex)){
+      const wave=e.courseRound??e.wave,old=firstByRound.get(wave);
+      if(old===undefined||e.courseIndex<old)firstByRound.set(wave,e.courseIndex);
+    }
+  };
+  for(const e of S.enemies)include(e);
+  for(const e of S.spawnQueue)include(e);
+  for(const e of S.enemies){
+    if(e.dead)continue;
+    if(e.feastGuardToken&&!tokens.has(e.feastGuardToken))e.feastGuardToken=null;
+    e.courseLocked=!e.feastPhaseMember&&!e.banquetAfterlife&&Number.isInteger(e.courseIndex)&&e.courseIndex>(firstByRound.get(e.courseRound??e.wave)??e.courseIndex);
+    e.phaseLocked=e.type==='lastBanquet'&&!!e.feastGuardToken;
+    e.feastLocked=!!(e.courseLocked||e.phaseLocked);
+  }
+  }finally{v14RefreshingLocks=false}
+}
+function v14GuardHp(e){
+  if(e.v14HpGuard)return;
+  let value=e.hp;
+  Object.defineProperty(e,'hp',{configurable:true,enumerable:true,get(){return value},set(next){
+    if(next<value){
+      if(e.feastLocked)return;
+      if(e.type==='lastBanquet'&&(e.feastPhase||0)<2){
+        const threshold=e.maxHp*((e.feastPhase||0)===0?.66:.33);
+        if(next<=threshold){value=threshold;v13FeastPhase(e);return}
+      }
+    }
+    value=next;
+  }});
+  e.v14HpGuard=true;
+}
+
+
+/* Targeting filters. Locked food keeps moving but cannot be deliberately selected
+ * or damaged by splash/global attacks while its plate is not yet active. */
+findTarget=function(t,range,livingOnly=false){
+  const mode=t.targetMode||'front',priority=mode==='protein'||mode==='carb'||mode==='fat'||mode==='boss';
+  let preferred=null,fallback=null,preferredValue=0,fallbackValue=0,preferredOrder=Infinity,fallbackOrder=Infinity;
+  const byHp=mode==='strong'||mode==='weak',ascending=mode==='back'||mode==='weak';
+  const query=perfQuery(t.x,t.y,range),entries=query?query.entries:S.enemies;
+  for(let i=0;i<entries.length;i++){
+    const e=query?entries[i].e:entries[i],order=query?entries[i].order:i;
+    if(e.dead||e.digesting||e.feastLocked||(livingOnly&&e.hp<=0))continue;
+    const p=perfPosition(e);if(!perfWithin(p.x-t.x,p.y-t.y,range))continue;
+    const match=!priority||(mode==='boss'?e.boss:e.kind===mode),value=byHp?e.hp:e.t;
+    if(match){if(!preferred||(ascending?value<preferredValue:value>preferredValue)||(value===preferredValue&&order<preferredOrder)){preferred=e;preferredValue=value;preferredOrder=order}}
+    else if(!fallback||value>fallbackValue||(value===fallbackValue&&order<fallbackOrder)){fallback=e;fallbackValue=value;fallbackOrder=order}
+  }
+  return preferred||fallback;
+};
+const v14PickBoss=r6PickBoss;
+r6PickBoss=function(t,range,filter=()=>true){return v14PickBoss(t,range,e=>!e.feastLocked&&filter(e))};
+r5CannonBossTarget=function(t,range){
+  r6PruneKnockMap(t);const counts=r6KnockMap(t),now=S.compatElapsed||0,mode=R10_KNOCK_MODES.includes(t.knockMode)?t.knockMode:'front';
+  let available=null,fallback=null;
+  const better=(a,b)=>!a?b:mode==='back'?(b.t<a.t?b:a):mode==='strong'?(b.hp>a.hp?b:a):mode==='weak'?(b.hp<a.hp?b:a):(b.t>a.t?b:a);
+  for(const e of perfNearby(t.x,t.y,range)){
+    if(e.dead||e.digesting||e.feastLocked||e.hp<=0||!e.boss)continue;
+    const p=perfPosition(e);if(!perfWithin(p.x-t.x,p.y-t.y,range))continue;
+    fallback=better(fallback,e);if((counts.get(e.r6Id)||0)<2&&(e.knockImmuneUntil||0)<=now)available=better(available,e);
+  }
+  return available||fallback;
+};
+r3DigestTarget=function(){
+  let best=null;for(const e of S.enemies){if(e.dead||e.digesting||e.feastLocked||e.hp<=0||!e.boss||r6DigestRank(e)===0)continue;if(!best||r6DigestRank(e)>r6DigestRank(best)||(r6DigestRank(e)===r6DigestRank(best)&&e.t>best.t))best=e}
+  if(best&&!best.r6DigestSetter){const total=r6DigestSeconds(best)*1.5;let value=0,started=false;Object.defineProperty(best,'digesting',{configurable:true,get(){return value},set(next){if(!started&&next===5){started=true;value=total}else value=next}});best.r6DigestSetter=true;best.digestTotal=total}
+  return best;
+};
+const v14Neighbors=r9PancreasNeighbors;
+r9PancreasNeighbors=function(primary){return v14Neighbors(primary).filter(e=>!e.feastLocked)};
+const v14Hit=r9Hit;
+r9Hit=function(e,raw,t){
+  if(!e||e.dead||e.digesting||e.deploying||e.feastLocked||e.hp<=0)return 0;
+  const before=Math.max(0,e?.hp||0),result=v14Hit(e,raw,t);
+  if(t?.type==='villus')v14VillusGold(t,Math.max(0,before-Math.max(0,e.hp)),!!t.villusFullActive);
+  if(e.hp<=0&&(Number.isInteger(e.courseIndex)||e.feastSummonToken))v14RefreshLocks();
+  return result;
+};
+const v14FlatHit=r10FlatTowerHit;
+r10FlatTowerHit=function(e,...args){if(e?.feastLocked)return 0;const result=v14FlatHit(e,...args);if(e?.hp<=0&&(Number.isInteger(e.courseIndex)||e.feastSummonToken))v14RefreshLocks();return result};
+const v14Deal=deal;
+deal=function(e,...args){if(e?.feastLocked)return;const result=v14Deal(e,...args);if(e?.hp<=0&&(Number.isInteger(e.courseIndex)||e.feastSummonToken))v14RefreshLocks();return result};
+
+
+/* Locked bosses are visually translucent; movement and knockback floors are left
+ * untouched. The existing remains and phase-two drawing order are preserved. */
+const v14DrawNormal=[],v14DrawLocked=[],v14DrawFeast=[],v14DrawFeastLocked=[];
+drawEnemies=function(){
+  banquetDrawRemains();v14DrawNormal.length=v14DrawLocked.length=v14DrawFeast.length=v14DrawFeastLocked.length=0;
+  for(const e of S.enemies){
+    if(e.type==='lastBanquet')(e.feastLocked?v14DrawFeastLocked:v14DrawFeast).push(e);
+    else (e.feastLocked?v14DrawLocked:v14DrawNormal).push(e);
+  }
+  perfDrawEnemies(v14DrawNormal);
+  ctx.save();ctx.globalAlpha=.38;perfDrawEnemies(v14DrawLocked);ctx.restore();
+  for(const group of S.banquetDeployments||[])perfDrawEnemies(group.items);
+  perfDrawEnemies(v14DrawFeast);
+  ctx.save();ctx.globalAlpha=.38;perfDrawEnemies(v14DrawFeastLocked);ctx.restore();
+};
+
+/* Refresh locks before combat and after state changes, without altering movement. */
+const v14BeforeCombat=absorbBeforeCombat;
+absorbBeforeCombat=function(){v14RefreshLocks();return v14BeforeCombat()};
+const v14Update=update;
+update=function(dt){if(S.banquetPrompt)return;v14RefreshLocks();const result=v14Update(dt);v14RefreshLocks();return result};
+
+/* Only announce after the actual round starts, including automatic starts. */
+const v14Intro=r8ShowRoundIntro;
+r8ShowRoundIntro=function(round,options){
+  if(round>=111){if(!S.running)setMsg('▶ 라운드 시작을 눌러 코스 요리를 시작하세요.');return true}
+  return v14Intro(round,options);
+};
+
+
+
+/* Full decomposition reward. A special deletion may skip rendering/spawning a
+ * branch, but it must not delete the gold that branch would have yielded. */
+const v14GoldMemo=new Map();
+function v14TreeGold(type,stack=new Set()){
+  if(v14GoldMemo.has(type))return v14GoldMemo.get(type);
+  if(stack.has(type))return 0;const d=ENEMY_DEFS[type];if(!d)return 0;
+  const children=Array.isArray(d.children)?d.children:[];
+  if(!children.length){v14GoldMemo.set(type,20);return 20}
+  const next=new Set(stack);next.add(type);const value=3+children.reduce((sum,k)=>sum+v14TreeGold(k,next),0);v14GoldMemo.set(type,value);return value;
+}
+const v14Digest=r3CompleteDigestion;
+r3CompleteDigestion=function(e){
+  if(e?.feastLocked)return;
+  if(!e||e.dead||e.deathResolved)return v14Digest(e);
+  const before=S.gold,target=v14TreeGold(e.type),result=v14Digest(e);
+  if(e.dead&&e.deathResolved)S.gold+=target-(S.gold-before);
+  v14RefreshLocks();return result;
+};
+const v14Death=resolveDeath;
+resolveDeath=function(e){
+  if(!e||e.dead||e.deathResolved||e.feastLocked)return;
+  absorbCommit(e);if(e.feastLocked)return;
+  const beforeChildren=Array.isArray(e.children)?e.children.slice():[],parent=v14DeathParent;
+  v14DeathParent=e;
+  try{
+    const result=v14Death(e);
+    if(e.dead&&e.deathResolved&&beforeChildren.length){
+      const remaining=new Map();for(const k of e.children||[])remaining.set(k,(remaining.get(k)||0)+1);
+      let bonus=0;for(const k of beforeChildren){const left=remaining.get(k)||0;if(left)remaining.set(k,left-1);else bonus+=v14TreeGold(k)}
+      S.gold+=bonus;
+    }
+    return result;
+  }finally{v14DeathParent=parent;v14RefreshLocks()}
+};
+
 
 backgroundInstall();
 </script>
