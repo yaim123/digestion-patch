@@ -1,5 +1,8 @@
 
 
+
+
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -137,7 +140,7 @@ body:not(.mobileLandscape) #app.gameVisible #info{flex:0 1 auto;min-height:0;max
 
 /* Readable PC/tablet panel. Compact phone layouts retain their own rules. */
 @media(min-width:600px) and (min-height:541px){
-  #app.gameVisible{grid-template-columns:minmax(0,1fr) clamp(300px,29vw,420px);height:100dvh}
+  #app.gameVisible{--panel-base:clamp(300px,29vw,420px);--panel-extra:min(calc(var(--panel-base)*.12),max(0px,calc(100vw - var(--panel-base) - 100dvh)));grid-template-columns:minmax(0,1fr) calc(var(--panel-base) + var(--panel-extra));height:100dvh}
   #panel h1{font-size:20px;padding:14px 14px 6px}
   #towerGrid{grid-auto-rows:max-content;align-content:start}
   .towerBtn{min-height:150px;height:max-content;padding:10px;gap:3px}
@@ -150,6 +153,42 @@ body:not(.mobileLandscape) #app.gameVisible #info{flex:0 1 auto;min-height:0;max
   .awaken,.fusionBox,.targetTitle,.targetHint,.targetBtn{font-size:12px}
   .targetBtn{min-height:34px;padding:6px 9px}.sellBtn{font-size:14px;min-height:42px}
   .sellBtn small{font-size:11px}.shopGroup{font-size:12px}
+}
+
+
+/* Readability changes are confined to UI elements, never the game canvas. */
+#message .bossIntroName{font-size:1.2em;font-weight:900;color:#ffe08a;background:#55421e;padding:1px 4px;border-radius:4px}
+.infoEmpty{margin:0;color:#c6d2e5;line-height:1.6}
+#modalLayer.settingsOpen .modalCard{width:min(650px,94vw);max-width:650px;max-height:90dvh;padding:24px}
+#modalLayer.settingsOpen .modalHead h2{font-size:24px}
+#modalLayer.settingsOpen .modalText{font-size:16px;line-height:1.6}
+#modalLayer.settingsOpen .closeBtn{font-size:15px;min-height:44px;min-width:44px}
+#modalLayer.settingsOpen .settingsValue{font-size:16px}
+#modalLayer.settingsOpen .settingsRange{height:36px;cursor:pointer}
+#modalLayer.settingsOpen .cool{font-size:13px;text-align:left;line-height:1.5}
+.settingsAudio{display:grid;gap:8px;margin:18px 0;padding:16px;border:1px solid #66698a;border-radius:10px;background:#12192a}
+.settingsAudio label{font-weight:800}
+.settingsBgmRow{display:flex;justify-content:space-between;align-items:center;gap:16px;border-top:1px solid #444c67;padding-top:12px;margin-top:4px}
+#settingsBgmToggle{min-width:100px;min-height:44px;padding:8px 18px;border-radius:8px;border:1px solid #919ab5;background:#343c52;color:#fff;font-weight:900;cursor:pointer}
+#settingsBgmToggle[aria-pressed="true"]{border-color:#99dec7;background:#236452}
+#modalLayer.settingsOpen .modalActions{gap:10px;margin-top:18px}
+#modalLayer.settingsOpen .modalBtn{font-size:15px;min-height:44px;padding:10px 16px;font-weight:800}
+#modalLayer.settingsOpen #r6Home{width:100%;min-height:50px;background:#753448;border:1px solid #de8d9e;color:#fff;font-size:17px}
+#modalLayer.settingsOpen #r6Back{width:100%}
+@media(min-width:600px) and (min-height:541px){
+ #message{font-size:14px;font-weight:700;line-height:1.5;padding:9px 12px;background:#11192eee;border-color:#8998bd;max-width:100%}
+}
+@media(min-width:1100px) and (min-height:541px){
+ .towerName{font-size:15px}.towerTag{font-size:12px}.towerMeta{font-size:13px}.towerDesc{font-size:13px;line-height:1.5}
+ .towerBtn{padding:11px;gap:4px}
+}
+@media(max-width:599px),(max-height:540px){
+ #modalLayer.settingsOpen .modalCard{padding:14px;max-height:92dvh}
+ #modalLayer.settingsOpen .modalHead h2{font-size:20px}
+ #modalLayer.settingsOpen .modalText{font-size:14px}
+ #modalLayer.settingsOpen .modalBtn{font-size:14px}
+ #modalLayer.settingsOpen #r6Home{font-size:15px}
+ .settingsAudio{padding:12px;margin:12px 0;gap:5px}
 }
 
 </style>
@@ -210,7 +249,7 @@ function idleAudioCheck(){
 }
 function idleAudioActivity(event){
   if(backgroundIsHidden())return;
-  if(event?.target instanceof Element&&event.target.closest('#lobbyBgmBtn,#gameBgmBtn'))return;
+  if(event?.target instanceof Element&&event.target.closest('#lobbyBgmBtn,#gameBgmBtn,#settingsBgmToggle'))return;
   idleAudioCheck();
   // Lobby inactivity resets on input; round waiting counts until a round starts.
   if(idleAudio.mode==='lobby'||idleAudio.sleeping)idleAudioWake();
@@ -333,7 +372,13 @@ try{bgmEnabled=localStorage.getItem('nutritionTdBgm')!=='off';masterVolume=safeV
 function setAudioVolume(track,value){const a=audio[track];if(!a)return 0;const volume=safeVolume(value,0);try{a.volume=volume}catch(error){window.__nutritionAudioError=`${track}-volume-${error?.name||'error'}`}return volume}
 function applyVolume(){masterVolume=safeVolume(masterVolume,.3);setAudioVolume('main',masterVolume);setAudioVolume('game',masterVolume)}
 applyVolume();
-function syncBgmButtons(){for(const b of [ui.lobbyBgm,ui.gameBgm])if(b)b.textContent=bgmEnabled?'🎵 BGM ON':'🔇 BGM OFF'}
+function syncBgmButtons(){
+  for(const b of [ui.lobbyBgm,ui.gameBgm])if(b)b.textContent=bgmEnabled?'🎵 BGM ON':'🔇 BGM OFF';
+  const toggle=document.getElementById('settingsBgmToggle');
+  if(toggle){toggle.textContent=bgmEnabled?'ON':'OFF';toggle.setAttribute('aria-pressed',String(bgmEnabled))}
+  const status=document.getElementById('r6BgmState');
+  if(status)status.textContent=!bgmEnabled?'배경음악이 꺼져 있습니다.':masterVolume<=0?'BGM은 ON이며, 음량이 0%입니다.':'현재 라운드에 맞는 배경음악을 사용합니다.';
+}
 function pauseAudio(track){const a=audio[track];a.pause();a.currentTime=0}
 function switchBgm(track){pauseAudio(track==='main'?'game':'main');if(!bgmEnabled)return;const a=audio[track];a.play().catch(()=>{});bgmStarted=true;syncBgmButtons()}
 function toggleBgm(){if(!bgmStarted&&bgmEnabled){switchBgm(ui.lobby.classList.contains('hidden')?'game':'main');return}bgmEnabled=!bgmEnabled;try{localStorage.setItem('nutritionTdBgm',bgmEnabled?'on':'off')}catch(_){};if(!bgmEnabled){audio.main.pause();audio.game.pause()}else switchBgm(ui.lobby.classList.contains('hidden')?'game':'main');syncBgmButtons()}
@@ -661,7 +706,7 @@ function update(dt){if(S.gameOver||S.paused)return;const dtt=dt*S.speed;if(!S.ru
 
 function setMsg(t){if(S.courseNotice&&S.elapsed<S.courseNotice.until&&t!==S.courseNotice.text)return;S.messageTimer=3;ui.msg.textContent=t}
 
-function openModal(title,html){ui.modalTitle.textContent=title;ui.modalBody.innerHTML=html;ui.modal.classList.add('open');ui.modal.setAttribute('aria-hidden','false')}
+function openModal(title,html){ui.modalTitle.textContent=title;ui.modalBody.innerHTML=html;ui.modal.classList.toggle('settingsOpen',title==='⚙️ 설정');ui.modal.classList.add('open');ui.modal.setAttribute('aria-hidden','false')}
 function openSettings(){openModal('⚙️ 설정',`<p>배경음악과 효과음에 함께 적용되는 마스터 볼륨입니다.</p><label for="volumeRange">🔊 볼륨</label><input id="volumeRange" class="settingsRange" type="range" min="0" max="100" value="${Math.round(masterVolume*100)}"><output id="volumeValue" class="settingsValue">${Math.round(masterVolume*100)}%</output>`);const range=document.getElementById('volumeRange'),value=document.getElementById('volumeValue');range.oninput=()=>{masterVolume=Number(range.value)/100;applyVolume();value.textContent=`${range.value}%`;try{localStorage.setItem('nutritionTdVolume',masterVolume)}catch(_){}}}
 function closeModal(){ui.modal.classList.remove('open');ui.modal.setAttribute('aria-hidden','true')}
 function readLeaderboard(){try{const data=JSON.parse(localStorage.getItem('nutritionTdLeaderboard')||'[]');return Array.isArray(data)?data:[]}catch(_){return []}}
@@ -801,7 +846,7 @@ function r4DrawMalaFood(c,r){c.fillStyle='#7c2631';c.beginPath();c.ellipse(0,4,r
 function r4DrawGluttonFood(c,r){c.fillStyle='#f8e5bc';c.beginPath();c.ellipse(0,2,r*.7,r*.43,0,0,TAU);c.fill();for(const p of [[-.32,-.12,'#e88b52'],[.25,-.13,'#ffd463'],[-.05,.18,'#6cba72'],[.4,.16,'#bd6fdb']]){c.fillStyle=p[2];c.beginPath();c.arc(p[0]*r,p[1]*r,r*.13,0,TAU);c.fill()}}
 drawEnemies=function(){for(const e of S.enemies){const p=e.digesting?{x:e.digestX,y:e.digestY}:perfPosition(e);ctx.save();ctx.translate(p.x,p.y);const digestScale=e.digesting?Math.max(.25,e.digesting/(e.boss?5:3.5)):1;ctx.scale(digestScale,digestScale);const r=(e.boss?29:10.5+e.tier*2.35)*e.size,ratio=e.hp/e.maxHp;if(e.boss&&ratio<=.33)ctx.filter='grayscale(1) brightness(.67)';else if(e.boss&&ratio<=.66)ctx.filter='grayscale(.6) brightness(.85)';ctx.fillStyle=e.color;ctx.strokeStyle=e.stun>0?'#64e6ff':'rgba(255,255,255,.72)';ctx.lineWidth=e.boss?3:1.7;drawEnemyShape(ctx,e,r);if(e.type==='oysterBoss'||e.type==='spicyOysterBoss')r4DrawOysterFood(ctx,r);else if(e.type==='malatang'||e.type==='spicyMalatang')r4DrawMalaFood(ctx,r);else if(e.type==='gluttonKing')r4DrawGluttonFood(ctx,r);else if(e.boss){ctx.font=`${Math.round(25+e.size*7)}px serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(e.emoji,0,0)}if(e.special==='oyster'&&!e.boss)r4DrawOysterFood(ctx,r*.78);drawCartoonFace(e,r);ctx.filter='none';if(e.boss&&e.bossBadge>0){ctx.font='900 9px system-ui';ctx.fillStyle=e.spicy?'#ff6961':'#ffcf6b';ctx.fillText('BOSS',0,-r-9)}if(e.spicy){ctx.font='14px serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('🌶️',r*.52,-r*.72)}if(e.stun>0){ctx.strokeStyle='#64e6ff';ctx.lineWidth=3;ctx.beginPath();ctx.arc(0,0,r+7,0,TAU);ctx.stroke()}ctx.restore()}};
 drawFusionLinks=function(){const t=S.selectedTower;if(!t||t.level!==5||ui.modal.classList.contains('open')||ui.codexWrap.classList.contains('open'))return;const rel=new Set(Object.values(R3_FUSION).filter(r=>r.requires.includes(t.type)).flatMap(r=>r.requires));if(!rel.size)return;ctx.save();ctx.strokeStyle='rgba(151,220,255,.38)';ctx.lineWidth=1.5;ctx.setLineDash([5,4]);for(const o of S.towers)if(o!==t&&o.level===5&&rel.has(o.type)){ctx.beginPath();ctx.moveTo(t.x,t.y);ctx.lineTo(o.x,o.y);ctx.stroke()}ctx.restore()};
-function r3Pause(){if(r3ModalPaused===null){r3ModalPaused=S.paused;S.paused=true}}openModal=function(title,html){r3Pause();ui.modalTitle.textContent=title;ui.modalBody.innerHTML=html;ui.modal.classList.add('open')};closeModal=function(){ui.modal.classList.remove('open');if(r3ModalPaused!==null){S.paused=r3ModalPaused;r3ModalPaused=null}if(r3ModalReturn){const f=r3ModalReturn;r3ModalReturn=null;f()}};
+function r3Pause(){if(r3ModalPaused===null){r3ModalPaused=S.paused;S.paused=true}}openModal=function(title,html){r3Pause();ui.modal.classList.toggle('settingsOpen',title==='⚙️ 설정');ui.modalTitle.textContent=title;ui.modalBody.innerHTML=html;ui.modal.classList.add('open')};closeModal=function(){ui.modal.classList.remove('open');if(r3ModalPaused!==null){S.paused=r3ModalPaused;r3ModalPaused=null}if(r3ModalReturn){const f=r3ModalReturn;r3ModalReturn=null;f()}};
 applyVolume=function(){audio.main.volume=masterVolume;audio.game.volume=masterVolume};function r3Fade(track,target,d=.9){const a=audio[track],start=a.volume,token=++r3AudioTickets[track],at=performance.now();if(target>0&&masterVolume>0)a.play().then(()=>bgmStarted=true).catch(()=>{});const tick=now=>{if(token!==r3AudioTickets[track])return;const p=Math.min(1,(now-at)/(d*1000));a.volume=start+(target-start)*p;if(p<1)backgroundQueueFrame('fade-'+track,tick);else if(target===0){a.pause();a.currentTime=0}};backgroundQueueFrame('fade-'+track,tick)}switchBgm=function(track){const other=track==='main'?'game':'main';r3Fade(other,0,.85);if(bgmEnabled&&masterVolume>0)r3Fade(track,masterVolume,1)};try{const saved=localStorage.getItem('nutritionTdVolume');masterVolume=saved===null?.3:Math.max(0,Math.min(1,Number(saved)))}catch(_){masterVolume=.3}applyVolume();
 openSettings=function(){openModal('⚙️ 설정',`<p>🔊 BGM 음량</p><input id="r3Vol" class="settingsRange" type="range" min="0" max="100" value="${Math.round(masterVolume*100)}"><output id="r3VolOut" class="settingsValue">${Math.round(masterVolume*100)}%</output><div class="modalActions"><button id="r3Codex" class="modalBtn">📖 영양소 도감</button><button id="r3Restart" class="modalBtn">↻ 게임 재시작</button><button id="r3Home" class="modalBtn">⌂ 게임 포기하고 로비로</button><button id="r3ClearProfile" class="modalBtn">저장된 학교/학생 정보 지우기</button><button id="r3Back" class="modalBtn primary">게임으로 돌아가기</button></div>`);const v=document.getElementById('r3Vol');v.oninput=()=>{masterVolume=Number(v.value)/100;applyVolume();document.getElementById('r3VolOut').textContent=`${v.value}%`;try{localStorage.setItem('nutritionTdVolume',masterVolume)}catch(_){}};document.getElementById('r3Codex').onclick=()=>{r3ModalReturn=openSettings;closeModal();openCodex()};document.getElementById('r3Restart').onclick=()=>r3Confirm('현재 진행 상황이 초기화됩니다. 게임을 재시작하시겠습니까?',restartGame);document.getElementById('r3Home').onclick=()=>r3Confirm('현재 진행 상황이 사라집니다. 게임을 포기하고 로비로 이동하시겠습니까?',returnToLobby);document.getElementById('r3ClearProfile').onclick=()=>{try{localStorage.removeItem('nutritionTdProfile')}catch(_){}};document.getElementById('r3Back').onclick=closeModal};function r3Confirm(text,fn){ui.modalBody.innerHTML=`<p>${text}</p><div class="modalActions"><button id="r3Yes" class="modalBtn primary">예</button><button id="r3No" class="modalBtn">아니오</button></div>`;let used=false;document.getElementById('r3Yes').onclick=()=>{if(used)return;used=true;closeModal();fn()};document.getElementById('r3No').onclick=openSettings}
 enterGame=function(sandbox=false){S=createInitialState(sandbox);ui.lobby.classList.add('hidden');ui.app.classList.add('gameVisible');ui.sandboxTools.classList.toggle('show',sandbox);ui.overlay.classList.remove('show');resize();buildTowerPanel();showBuildInfo('mouth');switchBgm('game');setMsg(sandbox?'🧪 샌드박스: 원하는 라운드를 입력한 뒤 시작하세요.':'빈 격자에 타워를 설치하고 소화관을 방어하세요.')};returnToLobby=function(){S=createInitialState();ui.app.classList.remove('gameVisible');ui.lobby.classList.remove('hidden');ui.sandboxTools.classList.remove('show');ui.scoreModal.classList.remove('open');closeModal();closeCodex();switchBgm('main')};restartGame=function(){const sandbox=S.sandbox;S=createInitialState(sandbox);cells.forEach(c=>c.used=false);ui.overlay.classList.remove('show');ui.pause.textContent='❚❚ 일시정지';ui.speed.textContent='▶ 1배속';ui.sandboxTools.classList.toggle('show',sandbox);buildTowerPanel();showBuildInfo('mouth');setMsg('새 게임이 준비되었습니다. ▶ 라운드 시작을 눌러주세요.')};
@@ -1446,7 +1491,29 @@ applyVolume=function(){masterVolume=r7SafeVolume(masterVolume,.3);r7SetAudioVolu
 r6AttemptPlay=function(track,reason){const a=audio[track];if(!a||!bgmEnabled||masterVolume<=0||r7AudioPending[track]||!a.paused)return;try{r7AudioPending[track]=true;const playing=a.play();if(playing&&typeof playing.then==='function')playing.then(()=>{bgmStarted=true;r6BgmLastFailure=''}).catch(error=>{r6BgmLastFailure=error?.name||reason||'play-failed';r7AudioFailure(`${track}-${reason||'play'}`,error)}).finally(()=>{r7AudioPending[track]=false});else{bgmStarted=true;r7AudioPending[track]=false}}catch(error){r7AudioPending[track]=false;r6BgmLastFailure=error?.name||reason||'play-failed';r7AudioFailure(`${track}-${reason||'play'}`,error)}};
 r6Fade=function(track,target,duration=.9){const a=audio[track];if(!a)return;const token=++r6AudioTickets[track],from=r7SafeVolume(a.volume,0),to=r7SafeVolume(target,0),seconds=Number.isFinite(Number(duration))&&Number(duration)>0?Number(duration):0;if(to>0&&bgmEnabled)r6AttemptPlay(track,'play-rejected');if(seconds===0){r7SetAudioVolume(track,to);if(to===0){try{a.pause();a.currentTime=0}catch(error){r7AudioFailure(`${track}-pause`,error)}}return}const startedAt=performance.now();const tick=now=>{if(token!==r6AudioTickets[track])return;const progress=Math.max(0,Math.min(1,(Number(now)-startedAt)/(seconds*1000)));r7SetAudioVolume(track,from+(to-from)*progress);if(progress<1){backgroundQueueFrame('fade-'+track,tick);return}if(to===0){try{a.pause();a.currentTime=0}catch(error){r7AudioFailure(`${track}-pause`,error)}}};backgroundQueueFrame('fade-'+track,tick)};
 switchBgm=function(track){const active=track==='game'?'game':'main',other=active==='main'?'game':'main';r6Fade(other,0,.85);if(!bgmEnabled||masterVolume<=0){bgmStarted=false;return}bgmStarted=false;r6Fade(active,masterVolume,1)};
-openSettings=function(){const status=!bgmEnabled||masterVolume<=0?'음소거 상태':bgmStarted?'현재 배경음악 재생 중':'브라우저가 자동재생을 막으면 다음 클릭에서 다시 시도합니다.';openModal('⚙️ 설정',`<p>🔊 BGM 음량</p><input id="r6Vol" class="settingsRange" type="range" min="0" max="100" value="${Math.round(r7SafeVolume(masterVolume,.3)*100)}"><output id="r6VolOut" class="settingsValue">${Math.round(r7SafeVolume(masterVolume,.3)*100)}%</output><p class="cool" id="r6BgmState">${status}</p><div class="modalActions"><button id="r6Codex" class="modalBtn">📖 영양소 도감</button><button id="r6Restart" class="modalBtn">↻ 게임 재시작</button><button id="r6Home" class="modalBtn">⌂ 게임 포기하고 로비로</button><button id="r6ClearProfile" class="modalBtn">저장된 학교/학생 정보 지우기</button><button id="r6Back" class="modalBtn primary">게임으로 돌아가기</button></div>`);const volume=document.getElementById('r6Vol');volume.oninput=()=>{masterVolume=r7SafeVolume(Number(volume.value)/100,.3);applyVolume();document.getElementById('r6VolOut').textContent=`${Math.round(masterVolume*100)}%`;try{localStorage.setItem('nutritionTdVolume',String(masterVolume))}catch(_){};if(masterVolume>0)r6RetryBgm()};document.getElementById('r6Codex').onclick=()=>{r3ModalReturn=openSettings;closeModal();openCodex()};document.getElementById('r6Restart').onclick=()=>r3Confirm('현재 진행 상황이 초기화됩니다. 게임을 재시작하시겠습니까?',restartGame);document.getElementById('r6Home').onclick=()=>r3Confirm('현재 진행 상황이 사라집니다. 게임을 포기하고 로비로 이동하시겠습니까?',returnToLobby);document.getElementById('r6ClearProfile').onclick=()=>{try{localStorage.removeItem('nutritionTdProfile')}catch(_){}};document.getElementById('r6Back').onclick=closeModal};ui.settings.onclick=openSettings;
+openSettings=function(){
+  openModal('⚙️ 설정',`<section class="settingsAudio" aria-label="오디오 설정">
+    <label for="r6Vol">🔊 BGM 음량</label>
+    <input id="r6Vol" class="settingsRange" type="range" min="0" max="100" value="${Math.round(r7SafeVolume(masterVolume,.3)*100)}">
+    <output id="r6VolOut" for="r6Vol" class="settingsValue">${Math.round(r7SafeVolume(masterVolume,.3)*100)}%</output>
+    <div class="settingsBgmRow"><span id="settingsBgmLabel">BGM</span><button id="settingsBgmToggle" type="button" aria-labelledby="settingsBgmLabel settingsBgmToggle" aria-pressed="${bgmEnabled}">${bgmEnabled?'ON':'OFF'}</button></div>
+    <p class="cool" id="r6BgmState"></p>
+  </section><div class="modalActions"><button id="r6Codex" class="modalBtn">📖 영양소 도감</button><button id="r6Restart" class="modalBtn">↻ 게임 재시작</button><button id="r6Home" class="modalBtn">⌂ 게임 끝내고 메인화면으로 돌아가기</button><button id="r6ClearProfile" class="modalBtn">저장된 학교/학생 정보 지우기</button><button id="r6Back" class="modalBtn primary">게임으로 돌아가기</button></div>`);
+  const volume=document.getElementById('r6Vol');
+  volume.oninput=()=>{
+    masterVolume=r7SafeVolume(Number(volume.value)/100,.3);
+    for(const track of Object.keys(audio))++r6AudioTickets[track];
+    applyVolume();document.getElementById('r6VolOut').textContent=`${Math.round(masterVolume*100)}%`;
+    try{localStorage.setItem('nutritionTdVolume',String(masterVolume))}catch(_){}
+    if(bgmEnabled&&masterVolume>0)r6RetryBgm();syncBgmButtons();
+  };
+  document.getElementById('settingsBgmToggle').onclick=()=>toggleBgm();syncBgmButtons();
+  document.getElementById('r6Codex').onclick=()=>{r3ModalReturn=openSettings;closeModal();openCodex()};
+  document.getElementById('r6Restart').onclick=()=>r3Confirm('현재 진행 상황이 초기화됩니다. 게임을 재시작하시겠습니까?',restartGame);
+  document.getElementById('r6Home').onclick=()=>r3Confirm('현재 진행 상황이 사라집니다. 게임을 포기하고 로비로 이동하시겠습니까?',returnToLobby);
+  document.getElementById('r6ClearProfile').onclick=()=>{try{localStorage.removeItem('nutritionTdProfile')}catch(_){}};
+  document.getElementById('r6Back').onclick=closeModal;
+};ui.settings.onclick=openSettings;
 
 /* S.elapsed now means real game seconds at UI 1×.  compatElapsed is deliberately
    isolated for old authored numeric values, preserving the prior real-time balance. */
@@ -1588,7 +1655,7 @@ function r8SubjectParticle(value){
 function r8RenderNamedIntro(type,suffix){
   if(S.courseNotice&&S.elapsed<S.courseNotice.until)return true;
   const d=ENEMY_DEFS[type];if(!d)return false;
-  const name=document.createElement('strong');name.textContent=d.name;name.style.color='#FFD166';name.style.fontWeight='900';
+  const name=document.createElement('strong');name.textContent=d.name;if(d.boss)name.className='bossIntroName';else name.style.fontWeight='inherit';
   ui.msg.replaceChildren(name,document.createTextNode(suffix===undefined?`${r8SubjectParticle(d.name)} 처음 출현합니다.`:suffix));
   S.messageTimer=0;
   return true;
@@ -2929,7 +2996,7 @@ document.removeEventListener('touchstart',r6RetryBgm);
 document.removeEventListener('keydown',r6RetryBgm);
 function interactionRetryBgm(event){
   idleAudioActivity(event);
-  if(event?.target instanceof Element&&event.target.closest('#lobbyBgmBtn,#gameBgmBtn'))return;
+  if(event?.target instanceof Element&&event.target.closest('#lobbyBgmBtn,#gameBgmBtn,#settingsBgmToggle'))return;
   if(!bgmEnabled||masterVolume<=0)return;
   const track=interactionAudio.track;
   if(audio[track].paused)r6AttemptPlay(track,'user-interaction');
@@ -2945,7 +3012,7 @@ toggleBgm=function(){
       r7AudioPending[track]=false;audio[track].pause();
     }
     bgmStarted=false;
-  }else{idleAudio.sleeping=false;idleAudio.since=performance.now();switchBgm(interactionAudio.track)}
+  }else{idleAudio.sleeping=false;idleAudio.since=performance.now();switchBgm(ui.lobby.classList.contains('hidden')?'game':'main')}
   syncBgmButtons();
 };
 ui.lobbyBgm.onclick=toggleBgm;ui.gameBgm.onclick=toggleBgm;
@@ -3663,7 +3730,7 @@ rushNextRound=function(){
 const banquetIntro=r8ShowRoundIntro;
 r8ShowRoundIntro=function(round,options){
   if(round<111)return banquetIntro(round,options);
-  setMsg(`라운드 ${round} · 최후의 만찬 1마리 · 처치 후 대규모 2페이즈`);
+  r8RenderNamedIntro('lastBanquet',' 1마리 · 처치 후 대규모 2페이즈');
 };
 function banquetClear(){S.banquetDeployments=[];S.banquetFloors=null;S.cannonEvents=[];S.shots=[]}
 const banquetClearButton=ui.clearNutrients.onclick;
@@ -4196,7 +4263,8 @@ showTowerInfo=function(t){
   v13RefreshPanel();v13SelectionButton();
 };
 const v13BuildInfo=showBuildInfo;
-showBuildInfo=function(key){v13SelectedEnemy=null;v13Panel=null;v13BuildInfo(key);v13SelectionButton()};
+function showUnselectedInfo(){ui.info.innerHTML='<p class="infoEmpty">타워를 선택하면 상세 정보가 표시됩니다.</p>';ui.sell.disabled=true;if(typeof ml!=='undefined')mlSync()}
+showBuildInfo=function(key){v13SelectedEnemy=null;v13Panel=null;if(S.selectedBuild===key)v13BuildInfo(key);else showUnselectedInfo();v13SelectionButton()};
 const v13EnemyInfo=showEnemyInfo;
 showEnemyInfo=function(e){
   v13EnemyInfo(e);v13SelectedEnemy=e.boss?e:null;v13Panel=null;if(!e.boss)return;
@@ -4319,8 +4387,8 @@ applyVolume=function(){masterVolume=r7SafeVolume(masterVolume,.3);for(const trac
 const v13Enqueue=enqueueRound;
 enqueueRound=function(...args){S.feastLeaders=null;const result=v13Enqueue(...args);if((args[0]??S.round)>=111&&interactionAudio.track!=='feast')switchBgm('game');return result};
 const v13Enter=enterGame,v13Restart=restartGame;
-enterGame=function(...args){v13SelectedEnemy=v13Panel=null;v13Enter(...args);v13MultiBuild(false);S.selectedBuild=S.selectedTower=null;v13SelectionButton();updateUI(true)};
-restartGame=function(...args){v13SelectedEnemy=v13Panel=null;v13Restart(...args);v13MultiBuild(false);S.selectedBuild=S.selectedTower=null;switchBgm('game');v13SelectionButton();updateUI(true)};
+enterGame=function(...args){v13SelectedEnemy=v13Panel=null;v13Enter(...args);v13MultiBuild(false);S.selectedBuild=S.selectedTower=null;showUnselectedInfo();v13SelectionButton();updateUI(true)};
+restartGame=function(...args){v13SelectedEnemy=v13Panel=null;v13Restart(...args);v13MultiBuild(false);S.selectedBuild=S.selectedTower=null;showUnselectedInfo();switchBgm('game');v13SelectionButton();updateUI(true)};
 const v13Style=document.createElement('style');v13Style.textContent='#cancelSelection{display:block;width:100%;margin:12px 0 3px;padding:10px;border:1px solid #f399a1;border-radius:8px;background:#9a3048;color:#fff;font-weight:800;cursor:pointer}#info .upgrade:disabled{opacity:.48;cursor:not-allowed}';document.head.append(v13Style);
 buildTowerPanel();updateUI(true);
 
