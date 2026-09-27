@@ -3,7 +3,6 @@
 
 
 
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -23,7 +22,7 @@
 #legend{position:absolute;z-index:3;left:9px;bottom:9px;padding:7px 9px;border-radius:8px;background:rgba(23,19,40,.88);border:1px solid #6b5c7c;color:#e7d9ef;font-size:9px;pointer-events:none}#sandboxTools{display:none;position:absolute;z-index:4;right:10px;bottom:10px;width:240px;max-height:min(68dvh,560px);overflow:auto;padding:8px;border:1px solid #68c9c2;border-radius:10px;background:rgba(10,35,42,.94);font-size:10px}#sandboxTools.show{display:grid;gap:5px}.sandboxHead{font-weight:900;color:#9bf4e4}.sandboxBtn{border:1px solid #4c8d8d;border-radius:7px;padding:6px;background:#153746;color:#ecfffb;font-size:9px;font-weight:800;cursor:pointer}.sandboxSpawn{display:grid;grid-template-columns:1fr 1fr;gap:4px}.sandboxBosses{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px}.sandboxLabel{font-size:9px;color:#b9f8ed;font-weight:800;margin-top:2px}
 #overlay,#modalLayer,#scoreModal{position:fixed;inset:0;z-index:30;display:none;align-items:center;justify-content:center;background:rgba(3,5,18,.76);padding:18px}#overlay.show,#modalLayer.open,#scoreModal.open{display:flex}.card,.modalCard{background:#191a33;border:1px solid #86769b;border-radius:16px;padding:22px;max-width:560px;width:min(560px,94vw);max-height:86dvh;overflow:auto;text-align:center}.card h2,.modalCard h2{margin:0 0 8px}.restart{padding:11px 18px;background:#ff8dc1;border:0;border-radius:10px;font-weight:900;cursor:pointer}.modalCard{text-align:left}.modalHead{display:flex;justify-content:space-between;gap:10px;align-items:center}.modalHead h2{font-size:18px}.closeBtn{border:1px solid #74648d;background:#2b2949;color:#fff;border-radius:8px;padding:6px 9px;cursor:pointer}.modalText{color:#d8dcec;font-size:12px;line-height:1.6}.modalActions{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px}.modalBtn{font-size:11px}.modalBtn.primary{background:#c4558e}.leaderList{display:grid;gap:7px;margin-top:12px}.leaderItem{display:grid;grid-template-columns:34px 1fr auto;gap:8px;align-items:center;border:1px solid #504c6c;background:#20203a;border-radius:10px;padding:8px;font-size:11px}.leaderItem.top{border-color:#ffd166;background:#493b20}.leaderScore{color:#ffd166;font-weight:900}.formGrid{display:grid;gap:8px;margin-top:10px}.formGrid label{font-size:10px;color:#bbc5dc}.formGrid input{width:100%;padding:9px;border:1px solid #65617f;border-radius:8px;background:#111426;color:#fff}.scoreName{font-size:13px;color:#ffd166;font-weight:900}.choiceActions{display:flex;gap:8px;justify-content:center;margin-top:14px}
 #codex{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:rgba(2,7,13,.74);z-index:8;padding:18px}#codex.open{display:flex}.codexCard{width:min(760px,94%);max-height:84%;overflow:auto;background:#1b1c38;border:1px solid #75618b;border-radius:16px;padding:16px}.codexHead{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}.codexHead h2{margin:0;font-size:17px}.codexGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.codexItem{border:1px solid #504d70;border-radius:9px;padding:8px;background:#232342}.codexItem b{font-size:12px}.codexItem .small{font-size:9px;color:#c2cae0;line-height:1.4;margin-top:3px}.codexItem .split{margin-top:6px;padding:6px;border-radius:7px;background:#15162d;border:1px solid #41415e;font-size:9px;color:#e2e7f8}.codexItem .split strong{color:#ffe27c}.nutrientGlyph{display:inline-block;width:14px;height:14px;vertical-align:-2px;margin-right:4px;border:1px solid rgba(255,255,255,.75);background:var(--c);position:relative}.nutrientGlyph.carb{clip-path:polygon(25% 6%,75% 6%,100% 50%,75% 94%,25% 94%,0 50%)}.nutrientGlyph.protein{border-radius:3px}.nutrientGlyph.fat{border-radius:70% 35% 70% 70%;transform:rotate(45deg) scale(.82)}.nutrientGlyph.special{border-radius:55% 55% 45% 45%;background:linear-gradient(180deg,#e7fffb,#7cb4b5)}.targetBox{margin-top:8px;padding:7px;border-radius:8px;background:#15162d;border:1px solid #41415e}.targetTitle{font-size:9px;color:#b9bdd1;margin-bottom:5px;font-weight:800}.targetBtns{display:flex;flex-wrap:wrap;gap:4px}.targetBtn{border:1px solid #5b5779;background:#252440;color:#e9eafa;border-radius:7px;padding:4px 6px;font-size:9px;font-weight:800;cursor:pointer}.targetBtn.active{border-color:#ff9fcd;background:#663b5a}.targetHint{font-size:9px;color:#abb5ca;margin-top:4px}
-@media(max-width:1050px){#app{grid-template-columns:minmax(0,1fr) 330px}.towerDesc{display:none}#message{max-width:40%}}@media(max-width:780px){body{overflow:auto}#app.gameVisible{display:flex;flex-direction:column;height:auto;min-height:100dvh}#gameWrap{height:68dvh;min-height:440px}#panel{min-height:450px;border-left:0;border-top:1px solid #504360}.lobbyCenter{top:44%}.lobbyTitle{font-size:50px}.codexGrid{grid-template-columns:1fr}#message{order:20;margin-left:0;max-width:100%;flex-basis:100%}.stat{padding:5px 7px}.ctrl{padding:6px 7px;font-size:10px}}
+@media(max-width:1050px){#app{grid-template-columns:minmax(0,1fr) 330px}.towerDesc{display:none}#message{max-width:40%}}@media(max-width:599px){body{overflow:auto}#app.gameVisible{display:flex;flex-direction:column;height:auto;min-height:100dvh}#gameWrap{height:68dvh;min-height:440px}#panel{min-height:450px;border-left:0;border-top:1px solid #504360}.lobbyCenter{top:44%}.lobbyTitle{font-size:50px}.codexGrid{grid-template-columns:1fr}#message{order:20;margin-left:0;max-width:100%;flex-basis:100%}.stat{padding:5px 7px}.ctrl{padding:6px 7px;font-size:10px}}
 /* Cumulative balancing and readability overrides */
 .titleWrap{position:relative;display:inline-block}.titlePepper{position:absolute;top:-27px;left:50%;transform:translateX(-50%) rotate(-18deg);font-size:25px;filter:drop-shadow(1px 2px 0 #7c294c)}.lobbyTitle{white-space:nowrap}.towerBtn{overflow:hidden}.towerDesc{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}.shopGroup{grid-column:1/-1;color:#ffd1e5;font-size:10px;font-weight:900;letter-spacing:.08em;padding:6px 2px 0;border-bottom:1px solid rgba(255,190,220,.25)}.indigestionMeter{width:68px;height:7px;overflow:hidden;border-radius:99px;background:#3a2733;border:1px solid #784957;margin-top:3px}.indigestionMeter i{display:block;height:100%;width:0;background:linear-gradient(90deg,#ffbd68,#ff5969);transition:width .15s linear}.settingsRange{width:100%;accent-color:#ff78b5}.settingsValue{display:block;text-align:right;color:#ffd166;font-weight:900;margin-top:4px}
 /* Latest balance pass: the map stays square; infrequent controls live in Settings. */
@@ -37,7 +36,7 @@
    when the usable viewport is genuinely narrow. */
 .lobbySub{width:max-content;max-width:calc(100vw - 24px);margin:0 auto 20px;white-space:nowrap;font-size:clamp(7.5px,2.75vw,13px);line-height:1.2;letter-spacing:-.025em}
 .guideSection{padding:9px 0;border-top:1px solid rgba(160,175,214,.22)}.guideSection:first-child{border-top:0;padding-top:0}.guideSection h3{font-size:13px;margin:0 0 5px;color:#ffd4e7}.guideSection p{margin:5px 0}.guideTowerList{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.guideTower{display:grid;grid-template-columns:38px minmax(0,1fr);gap:5px;align-items:center;padding:6px;border:1px solid #4d4b70;border-radius:8px;background:#20203a;font-size:9px;line-height:1.35}.guideTower canvas{width:38px;height:31px}.guideTower b{font-size:10px}.guideSmall{font-size:9px;color:#c9d2e8}.guideBoss{display:flex;gap:6px;align-items:center;padding:5px 0;font-size:10px}.guideBossVisual{position:relative;display:inline-block;min-width:24px;font-size:20px;text-align:center}.guideBossVisual i{position:absolute;top:-9px;left:50%;transform:translateX(-50%);font-size:10px;font-style:normal}.guideRule{padding:7px;border-radius:8px;background:#15162d;border:1px solid #41415e;font-size:9px;line-height:1.45}
-@media(max-width:780px){
+@media(max-width:599px){
   body.r7Compact{overflow:hidden}
   #app.gameVisible{position:fixed;inset:0 auto auto 0;display:grid!important;grid-template-columns:minmax(0,1fr) 250px;width:calc(100vw / var(--r7-scale,1));height:calc(100dvh / var(--r7-scale,1));min-height:0;transform:scale(var(--r7-scale,1));transform-origin:top left}
   #app.gameVisible #gameWrap{height:auto;min-height:0}
@@ -138,6 +137,24 @@ body.mobileLandscape #mlDetailScroll #sellBtn:disabled{display:none}
 body:not(.mobileLandscape) #app.gameVisible #towerGrid{flex:1 1 0;min-height:0;max-height:none;overflow:auto}
 body:not(.mobileLandscape) #app.gameVisible #info{flex:0 1 auto;min-height:0;max-height:29%}
 #bottomPanel{flex-shrink:0}
+
+/* Readable PC/tablet panel. Compact phone layouts retain their own rules. */
+@media(min-width:600px) and (min-height:541px){
+  #app.gameVisible{grid-template-columns:minmax(0,1fr) clamp(300px,29vw,420px);height:100dvh}
+  #panel h1{font-size:20px;padding:14px 14px 6px}
+  #towerGrid{grid-auto-rows:max-content;align-content:start}
+  .towerBtn{min-height:150px;height:max-content;padding:10px;gap:3px}
+  .towerBtn>*{flex-shrink:0}
+  .towerName{font-size:14px}.towerTag{font-size:11px}.towerMeta{font-size:12px}
+  .towerDesc{font-size:12px;line-height:1.5;display:block!important;-webkit-line-clamp:unset!important;overflow:visible!important}
+  .towerBtn .towerPreview{width:48px;height:39px}
+  #app.gameVisible #info{font-size:13px;min-height:0;max-height:42vh;flex:0 1 auto;padding:12px;overflow:auto}
+  .infoTitle{font-size:16px}.upgrade .uhead{font-size:13px}.upgrade .ucost{font-size:12px}
+  .awaken,.fusionBox,.targetTitle,.targetHint,.targetBtn{font-size:12px}
+  .targetBtn{min-height:34px;padding:6px 9px}.sellBtn{font-size:14px;min-height:42px}
+  .sellBtn small{font-size:11px}.shopGroup{font-size:12px}
+}
+
 </style>
 </head>
 <body>
@@ -391,7 +408,8 @@ function buildMap(){
 }
 function distToPathRaw(x,y){let best={d:99999,t:0};for(let i=0;i<path.length-1;i++){let a=path[i],b=path[i+1],vx=b.x-a.x,vy=b.y-a.y,wx=x-a.x,wy=y-a.y,c=(wx*vx+wy*vy)/(vx*vx+vy*vy),u=Math.max(0,Math.min(1,c)),px=a.x+u*vx,py=a.y+u*vy,d=Math.hypot(x-px,y-py);if(d<best.d)best={d,t:(i+u)/(path.length-1)}}return best}
 function pointAt(t){t=Math.max(0,Math.min(1,t));const f=t*(path.length-1),i=Math.floor(f),q=f-i,a=path[i],b=path[Math.min(path.length-1,i+1)];return{x:a.x+(b.x-a.x)*q,y:a.y+(b.y-a.y)*q}}
-function roundMult(){return {speed:(1+0.018*(S.round-1))*1.15}}
+function contentRound(round){return round>=110?round-1:round}
+function roundMult(){return {speed:(1+0.018*(contentRound(S.round)-1))*1.15}}
 function spiceSpeedMult(){return 1}
 function addSpice(){/* Legacy hook intentionally inert: spicy is per-nutrient only. */}
 
@@ -452,7 +470,7 @@ function createTower(type,x,y){const d=TOWER_DEFS[type];return {type,x,y,level:1
 function sellSelected(){const t=S.selectedTower;if(!t)return;S.gold+=Math.floor(t.spent*.7);const c=cells.find(z=>Math.hypot(z.x-t.x,z.y-t.y)<1);if(c)c.used=false;S.towers=S.towers.filter(a=>a!==t);recomputeFusion();buildTowerPanel();S.selectedTower=null;ui.sell.disabled=true;showBuildInfo(S.selectedBuild||'mouth');setMsg('타워를 판매했습니다.');}
 function triggerFusionArrival(t){S.shake=1.2;for(let i=0;i<28;i++){const a=i/28*TAU;S.fx.push({kind:'goldSpark',x:t.x,y:t.y,vx:Math.cos(a)*(75+i%4*18),vy:Math.sin(a)*(75+i%4*18),r:3,life:.65,color:i%2?'#ffd166':'#fff3b0'})}triggerAlert('🔩 토탈 디스트로이어 강림!','#ffd166')}
 
-function enemy(type,options={}){const d=ENEMY_DEFS[type],boss=d.boss===true,wave=options.wave??S.round,firstWave=Math.max(0,wave-(d.unlockRound||wave)),maxHp=Math.max(1,Math.round(boss?d.hp*Math.pow(1.025,firstWave):d.hp+(wave-1)*(d.hpPerRound||2))),spicy=options.spicy??d.spicy===true,needsInheritedBoost=spicy&&!d.spicy;return {type,name:needsInheritedBoost?`매운 ${d.name}`:d.name,emoji:d.emoji,hp:maxHp,maxHp,speed:d.speed*(needsInheritedBoost?1.12:1),color:d.color,kind:d.kind,tier:d.tier,children:d.children.slice(),t:0,slow:0,stun:0,armor:d.tier>=3?Math.min(25,d.tier*3):0,dead:false,deathResolved:false,boss,blocked:0,size:d.size||1,special:d.special||null,spicy,bossBadge:0,wave,enteritis:options.enteritis??S.enteritis,enteritisPurify:0,vulnerable:0,emulsified:0,lastHitType:null}}
+function enemy(type,options={}){const d=ENEMY_DEFS[type],boss=d.boss===true,wave=options.wave??S.round,firstWave=Math.max(0,contentRound(wave)-(d.unlockRound===111&&type==='lastBanquet'?110:(d.unlockRound||contentRound(wave)))),maxHp=Math.max(1,Math.round(boss?d.hp*Math.pow(1.025,firstWave):d.hp+(contentRound(wave)-1)*(d.hpPerRound||2))),spicy=options.spicy??d.spicy===true,needsInheritedBoost=spicy&&!d.spicy;return {type,name:needsInheritedBoost?`매운 ${d.name}`:d.name,emoji:d.emoji,hp:maxHp,maxHp,speed:d.speed*(needsInheritedBoost?1.12:1),color:d.color,kind:d.kind,tier:d.tier,children:d.children.slice(),t:0,slow:0,stun:0,armor:d.tier>=3?Math.min(25,d.tier*3):0,dead:false,deathResolved:false,boss,blocked:0,size:d.size||1,special:d.special||null,spicy,bossBadge:0,wave,enteritis:options.enteritis??S.enteritis,enteritisPurify:0,vulnerable:0,emulsified:0,lastHitType:null}}
 function r4Pick(list){return list[Math.floor(Math.random()*list.length)]}
 function r4Entries(types,count,r,options={}){const a=[];for(let i=0;i<count;i++)a.push({type:r4Pick(types),wave:r,enteritis:!!options.enteritis,spicy:!!options.spicy,delay:options.delay??.28});return a}
 function r4Mixed(r,count,types,spicyTypes=[]){const a=[];const spicyCount=spicyTypes.length?Math.max(1,Math.round(count*.3)):0;for(let i=0;i<count-spicyCount;i++)a.push({type:r4Pick(types),wave:r,enteritis:isEnteritisRound(r),delay:.28});for(let i=0;i<spicyCount;i++)a.push({type:r4Pick(spicyTypes),wave:r,enteritis:isEnteritisRound(r),spicy:true,delay:.32});return a}
@@ -1122,7 +1140,7 @@ enemy=function(type,options={}){
   const e=r6BaseEnemy(type,options),d=ENEMY_DEFS[type],wave=options.wave??S.round;
   e.r6Id=(S.r6EnemyId=(S.r6EnemyId||0)+1);
   if(!e.boss)return e;
-  const elapsed=Math.max(0,wave-(d.unlockRound||wave));
+  const elapsed=Math.max(0,contentRound(wave)-(d.unlockRound===111&&type==='lastBanquet'?110:(d.unlockRound||contentRound(wave))));
   e.maxHp=Math.max(1,Math.round(d.hp*Math.pow(1.015,elapsed)));e.hp=e.maxHp;
   e.bossSpawnWave=wave;e.bossElapsed=elapsed;e.bossBaseSpeed=d.speed;
   const speed=d.speed*Math.min(1.5,1+.005*elapsed);
@@ -1401,7 +1419,7 @@ r3Mask=function(value){const chars=Array.from(String(value||''));if(chars.length
 r3LoadBoard=async function(){const input=document.getElementById('r3SchoolCode'),out=document.getElementById('r3BoardOut'),code=input.value.replace(/\s/g,'').toUpperCase();out.textContent='조회 중…';try{const data=await r3Api('leaderboard',{schoolCode:code,limit:5});if(!data.valid){out.textContent='유효하지 않은 학교 코드입니다.';return}r3SaveProfile({...r3Profile(),schoolCode:code,schoolName:r5CanonicalSchoolName(data.schoolName||'')});const rows=r5BestRows(data.scores||[],code).slice(0,5);out.replaceChildren();if(!rows.length){out.textContent='아직 이 학교에 등록된 성적이 없습니다.';return}rows.forEach((row,index)=>{const item=document.createElement('div'),rank=document.createElement('b'),who=document.createElement('span'),score=document.createElement('span');item.className=`leaderItem ${index===0?'top':''}`;if(index===0){rank.style.whiteSpace='nowrap';rank.append('👑',document.createElement('br'),'1등')}else rank.textContent=`${index+1}위`;who.append(`${row.studentNumber||''} · ${r3Mask(row.studentName||'학생')}`,document.createElement('br'),`R${row.round||0}`);score.className='leaderScore';score.textContent=`${Number(row.score||0).toLocaleString()}점`;item.append(rank,who,score);out.append(item)})}catch(_){out.textContent='리더보드 서버에 연결할 수 없습니다.'}};
 
 const R6_SPICY_BOSS={hamburger:'spicyHamburger',oysterBoss:'spicyOysterBoss',pizza:'spicyPizza',chicken:'spicyChicken',malatang:'spicyMalatang',oyster:'spicyOyster'};
-function r6SyncSandboxBossLabels(){document.querySelectorAll('.sandboxBosses [data-spawn]').forEach(button=>{const base=button.dataset.spawn,spicy=S.sandboxSpicySpawn&&R6_SPICY_BOSS[base],actual=spicy||base,d=ENEMY_DEFS[actual];button.textContent=`${spicy?'🌶️ ':''}${d.emoji||''} ${d.name.replace('매운 ','')}`})}
+function r6SyncSandboxBossLabels(){document.querySelectorAll('.sandboxBosses [data-spawn]').forEach(button=>{const base=button.dataset.spawn,spicy=S.sandboxSpicySpawn&&R6_SPICY_BOSS[base],actual=spicy||base,d=ENEMY_DEFS[actual];button.textContent=`${spicy?'🌶️ ':''}${d.emoji||''} ${base==='gluttonKing'?'폭식의 왕':d.name.replace('매운 ','')}`})}
 document.querySelectorAll('[data-spawn]').forEach(button=>button.onclick=()=>{if(!S.sandbox)return;const base=button.dataset.spawn,type=S.sandboxSpicySpawn&&R6_SPICY_BOSS[base]?R6_SPICY_BOSS[base]:base,e=enemy(type,{wave:Math.max(1,S.round),spicy:ENEMY_DEFS[type].spicy===true});e.t=.015;S.enemies.push(e);setMsg(`${e.name}을(를) 소환했습니다.`)});
 ui.sandboxSpice.onclick=()=>{if(!S.sandbox)return;S.sandboxSpicySpawn=!S.sandboxSpicySpawn;ui.sandboxSpice.textContent=`🌶️ 매운 소환 ${S.sandboxSpicySpawn?'ON':'OFF'}`;r6SyncSandboxBossLabels()};
 
@@ -1474,7 +1492,7 @@ openGuide=function(){const basics=['mouth','amylase','pepsin','lipase'],advanced
 openCodex=function(){r3Pause();const order=['glucose','maltose','starch','amino','peptide','protein','fatty','fatStage3','fatblob','oyster','spicyOyster','hamburger','spicyHamburger','oysterBoss','spicyOysterBoss','pizza','spicyPizza','chicken','spicyChicken','malatang','spicyMalatang','gluttonKing'];ui.codexBody.innerHTML=`<div class="small"><b>시각 규칙</b> · 하늘색 육각형=탄수화물 · 연보라 사각형=단백질 · 노란 물방울=지방. 매운 보스는 음식 위쪽의 🌶️과 불꽃 눈으로 구분합니다.<br><b>분해</b> · 햄버거→녹말+단백질+지방 덩어리 · 피자→햄버거×2 · 치킨→피자×2 · 마라탕→치킨×2</div><div class="codexGrid">${order.map(key=>{const d=ENEMY_DEFS[key],visual=d.boss?r7GuideBossVisual(key):(d.spicy?`<span class="guideBossVisual">${r7BossFood(d)}<i>🌶️</i></span>`:d.emoji||'');return `<div class="codexItem"><b style="color:${d.color}">${visual} ${d.name}</b><div class="small">HP ${d.hp.toLocaleString()} · ${d.boss?'보스':d.special?'특수':'일반'} · 기본 속도 ${d.speed}</div></div>`}).join('')}</div>`;ui.codexWrap.classList.add('open')};
 
 /* Compact mode keeps the map/panel relationship rather than stacking them. */
-function r7ApplyCompactLayout(){const narrow=window.innerWidth<=780,root=document.documentElement;document.body.classList.toggle('r7Compact',narrow);if(!narrow){root.style.setProperty('--r7-scale','1');return}const scale=Math.min(1,window.innerWidth/920,window.innerHeight/620);root.style.setProperty('--r7-scale',String(Math.max(.18,scale)))}
+function r7ApplyCompactLayout(){const narrow=window.innerWidth<600,root=document.documentElement;document.body.classList.toggle('r7Compact',narrow);if(!narrow){root.style.setProperty('--r7-scale','1');return}const scale=Math.min(1,window.innerWidth/920,window.innerHeight/620);root.style.setProperty('--r7-scale',String(Math.max(.18,scale)))}
 resize=function(){const oldGrid=gridSize||1;for(const t of S.towers)t.rangeTiles=t.range/oldGrid;const width=Math.max(1,wrap.clientWidth||wrap.getBoundingClientRect().width),height=Math.max(1,wrap.clientHeight||wrap.getBoundingClientRect().height);dpr=Math.min(2,devicePixelRatio||1);W=width;H=height;canvas.width=Math.round(W*dpr);canvas.height=Math.round(H*dpr);canvas.style.width=W+'px';canvas.style.height=H+'px';ctx.setTransform(dpr,0,0,dpr,0,0);buildMap();for(const t of S.towers){const c=cells.find(z=>z.col===t.col&&z.row===t.row);if(c){c.used=true;t.x=c.x;t.y=c.y;t.range=t.rangeTiles*gridSize}}};
 let r7ResizeFrame=0;function r7QueueResize(){cancelAnimationFrame(r7ResizeFrame);r7ResizeFrame=requestAnimationFrame(()=>{r7ApplyCompactLayout();resize()})}window.addEventListener('resize',r7QueueResize);window.addEventListener('orientationchange',r7QueueResize);window.visualViewport?.addEventListener('resize',r7QueueResize);r7ApplyCompactLayout();resize();
 let r7ShopStartY=0,r7ShopMovedAt=-Infinity;ui.grid.addEventListener('pointerdown',e=>{if(e.pointerType!=='mouse')r7ShopStartY=e.clientY},{passive:true});ui.grid.addEventListener('pointermove',e=>{if(e.pointerType!=='mouse'&&Math.abs(e.clientY-r7ShopStartY)>8)r7ShopMovedAt=performance.now()},{passive:true});ui.grid.addEventListener('click',e=>{if(performance.now()-r7ShopMovedAt<420){e.preventDefault();e.stopImmediatePropagation()}},true);
@@ -1609,6 +1627,7 @@ function r8PlannedFirstType(round){
   return R8_FIRST_TYPES[round]||null;
 }
 function r8ShowRoundIntro(round,{sandbox=false,actual=false}={}){
+  if(isEnteritisRound(round)){r8RenderIntroText('장염으로 소화관 운동이 빨라집니다.');return true}
   const first=r8PlannedFirstType(round);
   if(first&&(sandbox||actual)){
     if(sandbox)return r8RenderNamedIntro(first);
@@ -2408,7 +2427,7 @@ function perfDrawEnemies(enemies) {
     ctx.save(); ctx.translate(p.x, p.y);
     const total = e.digestTotal || (e.boss ? 5 : 3.5);
     const ds = e.digesting ? Math.max(.25, e.digesting / total) : 1;
-    ctx.scale(ds*(e.feastArtScale||1), ds*(e.feastArtScale||1));
+    ctx.scale(ds*v15EnemyArtScale(e), ds*v15EnemyArtScale(e));
     const r = (e.boss ? 29 : 10.5 + e.tier * 2.35) * e.size, ratio = e.hp / e.maxHp;
     const filter = e.type==='lastBanquet' ? 'none' : e.boss && ratio <= .33 ? 'grayscale(1) brightness(.67)' :
       e.boss && ratio <= .66 ? 'grayscale(.6) brightness(.85)' : 'none';
@@ -2553,7 +2572,7 @@ function mlFormatText(el,value){
 }
 function mlWanted(){
   const w=window.innerWidth,h=window.innerHeight;
-  return matchMedia('(any-pointer: coarse)').matches&&w>h&&h<=540&&w>=560;
+  return w>h&&h<=540&&w>=560;
 }
 function mlSync(){
   if(!ml.active)return;
@@ -2883,7 +2902,7 @@ enqueueRound = function(round = S.round, append = false) {
 const interactionAudio={track:ui.lobby.classList.contains('hidden')?'game':'main',tokens:{main:0,game:0}};
 const interactionSwitchBgm=switchBgm;
 switchBgm=function(track){
-  interactionAudio.track=(track==='game'||track==='feast')?(S.round>=110?'feast':'game'):'main';
+  interactionAudio.track=(track==='game'||track==='feast')?(S.round>=111?'feast':'game'):'main';
   if(idleAudio.mode!==idleAudioMode()){idleAudio.mode=idleAudioMode();idleAudio.sleeping=false;idleAudio.since=performance.now()}
   for(const other of Object.keys(audio))if(other!==interactionAudio.track){++r6AudioTickets[other];++interactionAudio.tokens[other];r7AudioPending[other]=false;audio[other].pause();audio[other].currentTime=0}
   if(bgmEnabled&&masterVolume>0)r6Fade(interactionAudio.track,masterVolume,1);
@@ -3339,12 +3358,12 @@ function absorbMaxLevel(type){return type==='villus'?10:5}
 const ABSORB_STATS={
   capillary:{damage:[4,7,11,16,23],range:[2.4,2.5,2.6,2.7,2.8],rate:[.18,.18,.18,.18,.18]},
   lacteal:{damage:[34,50,75,110,160],range:[3,3.1,3.2,3.3,3.4],rate:[2.1,2.025,1.95,1.875,1.8]},
-  villus:{damage:[836,1496,2464,3652,5016,6600,8360,10296,12408,14608],range:[3,3.5,4.3,5.1,6,7.1,8.3,9.5,10.7,12],rate:[.9,.87,.84,.81,.78,.75,.72,.69,.65,.6]}
+  villus:{damage:[752.4,1346.4,2217.6,3286.8,4514.4,5940,7524,9266.4,11167.2,13147.2],range:[3,3.5,4.3,5.1,6,7.1,8.3,9.5,10.7,12],rate:[.9,.87,.84,.81,.78,.75,.72,.69,.65,.6]}
 };
 Object.assign(TOWER_DEFS,{
   capillary:{name:'모세혈관',short:'빠른 단일 흡수',group:'고급',icon:'🩸',color:'#ff779c',cost:300,damage:4,range:2.4,rate:.18,type:'attack',desc:'설치 이후 전 맵 실제 피해로 자동 성장 · 최대 Lv5. Lv5부터 보스 피해 +15%. 모세혈관 Lv5 + 암죽관 Lv5 → 융털.',awaken:'전 맵 피해로 성장'},
   lacteal:{name:'암죽관',short:'느린 범위 흡수',group:'고급',icon:'💧',color:'#83efd0',cost:300,damage:34,range:3,rate:2.1,type:'attack',desc:'1.1타일 범위 흡수 · 전 맵 실제 피해로 자동 성장 · 최대 Lv5. Lv5부터 보스 피해 +15%. 모세혈관 Lv5 + 암죽관 Lv5 → 융털.',awaken:'전 맵 피해로 성장'},
-  villus:{name:'융털',short:'후방 특화 합성',group:'합성',icon:'🌿',color:'#ffe3a1',cost:0,damage:836,range:3,rate:.9,type:'attack',desc:'뒤쪽에 설치해 출구로 향하는 적 한 마리를 흡수합니다. 같은 레벨 2개를 수동 합성해 성장. 보유 제한: Lv1~9는 각 레벨당 최대 2개, Lv10 융털은 1개만 보유할 수 있습니다.',awaken:'Lv5 긴급 흡수 강화 · Lv7 저체력 흡수 · Lv10 장거리 흡수'}
+  villus:{name:'융털',short:'후방 특화 합성',group:'합성',icon:'🌿',color:'#ffe3a1',cost:0,damage:752.4,range:3,rate:.9,type:'attack',desc:'뒤쪽에 설치해 출구로 향하는 적 한 마리를 흡수합니다. 같은 레벨 2개를 수동 합성해 성장. 보유 제한: Lv1~9는 각 레벨당 최대 2개, Lv10 융털은 1개만 보유할 수 있습니다.',awaken:'Lv5 긴급 흡수 강화 · Lv7 저체력 흡수 · Lv10 장거리 흡수'}
 });
 function absorbCommit(e){
   if(!e||e.deploying)return;
@@ -3535,11 +3554,11 @@ buildTowerPanel();
 
 /* Phase two is kept outside S.enemies until the single shared arrival deadline.
  * Rendering reuses the same cached HP-state sprites as ordinary enemies. */
-ENEMY_DEFS.lastBanquet={...ENEMY_DEFS.gluttonKing,name:'최후의 만찬',emoji:'🍽️',hp:ENEMY_DEFS.gluttonKing.hp*20,unlockRound:110,size:2.05,color:'#b263b8',children:[]};
+ENEMY_DEFS.lastBanquet={...ENEMY_DEFS.gluttonKing,name:'최후의 만찬',emoji:'🍽️',hp:ENEMY_DEFS.gluttonKing.hp*20,unlockRound:111,size:2.05,color:'#b263b8',children:[]};
 const banquetEnteritis=isEnteritisRound;
-isEnteritisRound=function(round){return round!==110&&banquetEnteritis(round)};
+isEnteritisRound=function(round){return round===110||round!==111&&banquetEnteritis(contentRound(round))};
 const banquetEntries=makeRoundEntries;
-makeRoundEntries=function(round){return round>=110?[{type:'lastBanquet',wave:round,enteritis:isEnteritisRound(round),spicy:false,delay:.25}]:banquetEntries(round)};
+makeRoundEntries=function(round){return round>=111?[{type:'lastBanquet',wave:round,enteritis:isEnteritisRound(round),spicy:false,delay:.25}]:banquetEntries(round)};
 let banquetPathCache=null;
 function banquetSegments(){
   if(banquetPathCache?.path===path)return banquetPathCache;
@@ -3563,7 +3582,7 @@ function banquetCreatePhase(e){
   // Keep every arrival ahead of the death position, even near the exit.
   const kinds=['starch','protein','fatblob','maltose','peptide','fatStage3'];
   for(let i=0;i<150;i++){const t=e.t+(limit-e.t)*i/149,oldPosition=.012+(middle-.012)*i/149;put(oldPosition>=last.start?kinds[i%3]:kinds[i%kinds.length],t)}
-  const count=10+Math.max(0,wave-110)*2;
+  const count=10+Math.max(0,wave-111)*2;
   let length=0;for(let i=1;i<path.length;i++)length+=Math.hypot(path[i].x-path[i-1].x,path[i].y-path[i-1].y);
   const layout=[];let next=e.t;
   for(const [type,anchor] of [['gluttonKing',e.t],['malatang',lanes[2].start],['chicken',lanes[3].start]]){
@@ -3619,12 +3638,12 @@ perfPaintEnemyBody=function(e,r,face){
   ctx.restore();if(face)drawCartoonFace(e,r);
 };
 function banquetRequireStart(round,action){
-  if(round!==110&&round!==111&&round!==112)return false;
+  if(round!==111&&round!==112&&round!==113)return false;
   if(S.banquetApproved?.[round])return false;
   if(S.banquetPrompt)return true;
   const state=S;S.banquetPrompt={round};
-  const course=round>=111;
-  const text=round===110?'최후의 만찬을 음미하시오.':round===111?'코스 요리가 시작됩니다. 앞선 접시부터 차례대로 비우십시오.':'천천히 먹는 시간이 끝났습니다. 만찬이 조금씩 가속됩니다.';
+  const course=round>=112;
+  const text=round===111?'최후의 만찬을 음미하시오.':round===112?'코스 요리가 시작됩니다. 앞선 접시부터 차례대로 비우십시오.':'천천히 먹는 시간이 끝났습니다. 만찬이 조금씩 가속됩니다.';
   openModal(course?'코스 요리':'🍽️ 최후의 만찬',`<p style="font-size:18px;line-height:1.7">${text}</p><div class="modalActions"><button id="banquetStart" class="modalBtn primary">${course?'코스 요리 시작':'만찬 시작'}</button></div>`);
   document.getElementById('banquetStart').onclick=()=>{
     if(S!==state||!S.banquetPrompt)return;
@@ -3640,13 +3659,13 @@ startRound=function(){
   return banquetStartRound();
 };ui.start.onclick=()=>startRound();
 rushNextRound=function(){
-  if(S.gameOver||!S.running||S.round>=109)return;
+  if(S.gameOver||!S.running||S.round>=110)return;
   if(banquetRequireStart(S.round+1,()=>rushNextRound()))return;
   return banquetRush();
 };ui.rush.onclick=()=>rushNextRound();
 const banquetIntro=r8ShowRoundIntro;
 r8ShowRoundIntro=function(round,options){
-  if(round<110)return banquetIntro(round,options);
+  if(round<111)return banquetIntro(round,options);
   setMsg(`라운드 ${round} · 최후의 만찬 1마리 · 처치 후 대규모 2페이즈`);
 };
 function banquetClear(){S.banquetDeployments=[];S.banquetFloors=null;S.cannonEvents=[];S.shots=[]}
@@ -3659,7 +3678,7 @@ r3SandboxRound=function(){const n=Number(document.getElementById('sandboxRoundIn
 }return banquetSandboxRound()};
 document.getElementById('sandboxRoundGo').onclick=()=>r3SandboxRound();
 const banquetButton=document.createElement('button');banquetButton.className='sandboxBtn';banquetButton.dataset.spawn='lastBanquet';banquetButton.textContent='🍽️ 최후의 만찬';
-banquetButton.onclick=()=>{if(!S.sandbox)return;const e=enemy('lastBanquet',{wave:Math.max(110,S.round)});e.t=.015;S.enemies.push(e);setMsg('최후의 만찬을 소환했습니다.')};
+banquetButton.onclick=()=>{if(!S.sandbox)return;const e=enemy('lastBanquet',{wave:Math.max(111,S.round)});e.t=.015;S.enemies.push(e);setMsg('최후의 만찬을 소환했습니다.')};
 document.querySelector('.sandboxBosses').appendChild(banquetButton);
 const banquetGuide=openGuide;
 openGuide=function(){
@@ -3774,7 +3793,7 @@ function v14FullAbsorb(t,buff){
   }
   if(!targets.length){t.villusFullReady=S.elapsed+.15;return}
   t.villusFullReady=S.elapsed+7;t.villusFullLife=.9;t.villusFullGold=0;t.villusFullActive=true;
-  try{for(const e of targets)r9Hit(e,30000,t)}finally{t.villusFullActive=false}
+  try{for(const e of targets)r9Hit(e,27000,t)}finally{t.villusFullActive=false}
 }
 function v14DrawFullAbsorb(t){
   if(!(t.villusFullLife>0))return;
@@ -3791,7 +3810,7 @@ function villusSkillDescription(t){
   if(t.level>=7)lines.push(`<b>저체력 흡수</b>: HP 66% 이하 +${t.level===10?25:15}%, 33% 이하 +${t.level===10?50:30}% 피해.`,`<b>흡수 파동</b>: 주 대상 주변 ${villusSplashRadius(t).toFixed(2)}타일의 가까운 적 최대 2명에게 ${Math.round(villusSplashRatio(t)*100)}% 보조 피해.`);
   const boss=r9TowerBossBonus(t);if(boss>0)lines.push(`보스에게 추가 피해 +${Math.round(boss*100)}%.`);
   lines.push('<b>피해 흡수 수입</b>: 실제 피해 2,000당 1G. 남은 피해는 이월합니다.');
-  if(t.level===10)lines.push('<b>전면 흡수</b>: 7게임초마다 사거리 내 최대 8명에게 기본 피해 30,000을 1회 적용합니다. 기존 피해 보정 적용. 실제 피해 1,000당 1G.');
+  if(t.level===10)lines.push('<b>전면 흡수</b>: 7게임초마다 사거리 내 최대 8명에게 기본 피해 27,000을 1회 적용합니다. 기존 피해 보정 적용. 실제 피해 1,000당 1G.');
   return lines.map(line=>`<p>${line}</p>`).join('');
 }
 function villusDrawCore(c,level,scale=1){
@@ -3908,7 +3927,7 @@ function banquetLeaderFloor(leader,clearance){
 function banquetVisiblePosition(e,p){
   if(!e.boss||e.type==='lastBanquet'||e.deploying||e.digesting)return p;
   const leader=S.feastLeaders?.get(banquetOrigin(e));if(!leader||leader.dead)return p;
-  const c=perfPosition(leader),radius=29*(leader.size+e.size*(e.feastArtScale||1))+3,dx=p.x-c.x,dy=p.y-c.y,d2=dx*dx+dy*dy;
+  const c=perfPosition(leader),radius=29*(leader.size+e.size*v15EnemyArtScale(e))+3,dx=p.x-c.x,dy=p.y-c.y,d2=dx*dx+dy*dy;
   if(d2>=radius*radius-1e-6)return p;
   let ux=dx,uy=dy,length=Math.sqrt(d2);
   if(length<1e-6){const next=pointAt(Math.min(1,leader.t+.001));ux=next.x-c.x;uy=next.y-c.y;length=Math.hypot(ux,uy)||1;if(!ux&&!uy)uy=1}
@@ -3939,7 +3958,7 @@ function banquetSetFloor(e){
 const banquetV2Enemy=enemy;
 enemy=function(type,options){
   const e=banquetV2Enemy(type,options);
-  if(type==='lastBanquet'){e.hp=e.maxHp=Math.round(ENEMY_DEFS.lastBanquet.hp*(e.wave>=111?1.10*(1+.05*(e.wave-111)):1));e.absorbHP=e.hp}
+  if(type==='lastBanquet'){e.hp=e.maxHp=Math.round(ENEMY_DEFS.lastBanquet.hp*(e.wave>=112?1.10*(1+.05*(e.wave-112)):1));e.absorbHP=e.hp}
   if(banquetV2Parent)banquetAncestry.set(e,banquetOrigin(banquetV2Parent));
   return e;
 };
@@ -4065,6 +4084,7 @@ function villusSplash(t,primary,raw){
 }
 // Shared with the original round generator: no new probability curve.
 function v12BossSpicyChance(type,round){
+  round=contentRound(round);
   if(type==='malatang'&&round>=105)return Math.min(.95,.4+(round-105)*.015);
   const unlocked=BOSS_SCHEDULE.filter(b=>b.round+5<=round&&b.type!=='gluttonKing').map(b=>b.type)
     .filter(type=>type!=='oysterBoss'||round>=37).filter(type=>type!=='pizza'||round>=45).filter(type=>type.includes('spicy'));
@@ -4081,7 +4101,7 @@ makeRoundEntries=function(round){
   const extras=[];for(let i=existing.length;i<required;i++)extras.push({...sample});entries.splice(at,0,...extras);return entries;
 };
 const v12UI=updateUI;
-updateUI=function(force=false){v12UI(force);if(S.round>=109){perfSet(ui.rush,'disabled',true);perfSet(ui.rush,'title','110라운드부터는 이전 라운드를 모두 처치한 뒤 시작할 수 있습니다.')}};
+updateUI=function(force=false){v12UI(force);if(S.round>=110){perfSet(ui.rush,'disabled',true);perfSet(ui.rush,'title','111라운드부터는 이전 라운드를 모두 처치한 뒤 시작할 수 있습니다.')}};
 ENEMY_DEFS.oysterBoss.name='초밥';ENEMY_DEFS.spicyOysterBoss.name='매운 초밥';
 TOWER_DEFS.villus.desc='모세혈관 Lv5 + 암죽관 Lv5로 최초 제작. 이후 생체 에너지로 Lv10까지 강화합니다. 보유 제한: Lv1~9는 레벨마다 2개, Lv10은 1개.';
 function v12GuideContent(){
@@ -4209,7 +4229,7 @@ canvas.addEventListener('click',event=>{
   // Match the visible draw order: banquet is on top of its summoned bosses.
   for(let i=S.enemies.length-1;i>=0;i--){const e=S.enemies[i];if(e.type!=='lastBanquet'||e.dead)continue;const p=perfPosition(e);if(perfWithin(p.x-x,p.y-y,29*e.size)){v13MultiBuild(false);showEnemyInfo(e);return}}
   for(let i=S.towers.length-1;i>=0;i--){const t=S.towers[i];if(perfWithin(t.x-x,t.y-y,Math.max(23,gridSize*.4))){v13MultiBuild(false);showTowerInfo(t);return}}
-  for(let i=S.enemies.length-1;i>=0;i--){const e=S.enemies[i];if(e.dead)continue;const p=banquetVisiblePosition(e,perfPosition(e));if(perfWithin(p.x-x,p.y-y,e.boss?29*e.size*(e.feastArtScale||1):gridSize*.35*(e.feastArtScale||1))){v13MultiBuild(false);showEnemyInfo(e);return}}
+  for(let i=S.enemies.length-1;i>=0;i--){const e=S.enemies[i];if(e.dead)continue;const p=banquetVisiblePosition(e,perfPosition(e));if(perfWithin(p.x-x,p.y-y,e.boss?29*e.size*v15EnemyArtScale(e):gridSize*.35*v15EnemyArtScale(e))){v13MultiBuild(false);showEnemyInfo(e);return}}
   clearSelection('빈 공간을 눌러 선택을 해제했습니다.');
 },true);
 document.addEventListener('click',event=>{
@@ -4300,7 +4320,7 @@ audio.feast=new Audio('./Feast_bgm.mp3');audio.feast.loop=true;audio.feast.prelo
 r3AudioTickets.feast=r6AudioTickets.feast=interactionAudio.tokens.feast=0;r7AudioPending.feast=false;
 applyVolume=function(){masterVolume=r7SafeVolume(masterVolume,.3);for(const track of Object.keys(audio))r7SetAudioVolume(track,track===interactionAudio.track?masterVolume:0);return masterVolume};
 const v13Enqueue=enqueueRound;
-enqueueRound=function(...args){S.feastLeaders=null;const result=v13Enqueue(...args);if((args[0]??S.round)>=110&&interactionAudio.track!=='feast')switchBgm('game');return result};
+enqueueRound=function(...args){S.feastLeaders=null;const result=v13Enqueue(...args);if((args[0]??S.round)>=111&&interactionAudio.track!=='feast')switchBgm('game');return result};
 const v13Enter=enterGame,v13Restart=restartGame;
 enterGame=function(...args){v13SelectedEnemy=v13Panel=null;v13Enter(...args);v13MultiBuild(false);S.selectedBuild=S.selectedTower=null;v13SelectionButton();updateUI(true)};
 restartGame=function(...args){v13SelectedEnemy=v13Panel=null;v13Restart(...args);v13MultiBuild(false);S.selectedBuild=S.selectedTower=null;switchBgm('game');v13SelectionButton();updateUI(true)};
@@ -4312,21 +4332,22 @@ const V14_COURSE_TYPES=Object.freeze([
   'hamburger','spicyHamburger','pizza','spicyPizza','oysterBoss','spicyOysterBoss',
   'chicken','spicyChicken','malatang','spicyMalatang','gluttonKing','lastBanquet'
 ]);
-const v14RoundScale=round=>round>=111?1+.05*(round-111):1;
+const v14RoundScale=round=>round>=112?1+.05*(round-112):1;
 
-/* 111+ uses one fixed full-course order. Difficulty rises through speed and the
+/* 112+ uses one fixed full-course order. Difficulty rises through speed and the
  * Last Banquet's HP rather than by changing the course contents. */
 const v14RoundEntries=makeRoundEntries;
 makeRoundEntries=function(round){
-  if(round<111)return v14RoundEntries(round);
+  if(round===110)return v14RoundEntries(109).map(entry=>({...entry,wave:110,enteritis:true}));
+  if(round<112)return v14RoundEntries(round);
   return V14_COURSE_TYPES.map((type,index)=>({
     type,wave:round,enteritis:isEnteritisRound(round),spicy:!!ENEMY_DEFS[type]?.spicy,
     delay:.25,courseIndex:index,courseRound:round
   }));
 };
 
-/* Rebase the Last Banquet's late-game HP on round 111.  Keep round 110 exactly
- * as authored; from 112 onward add 5% of the 111 baseline per round (linear). */
+/* Rebase the Last Banquet's late-game HP on round 112.  Keep round 111 exactly
+ * as authored; from 113 onward add 5% of the 112 baseline per round (linear). */
 let v14DeathParent=null;
 const v14Enemy=enemy;
 enemy=function(type,options={}){
@@ -4339,8 +4360,8 @@ enemy=function(type,options={}){
   return e;
 };
 function v14ApplyCourseSpeed(e,round){
-  if(!e||e.v14CourseSpeed||round<111)return;
-  const d=ENEMY_DEFS[e.type],base=d.speed*Math.min(1.5,1+.005*Math.max(0,111-(d.unlockRound||111)));
+  if(!e||e.v14CourseSpeed||round<112)return;
+  const d=ENEMY_DEFS[e.type],base=d.speed*Math.min(1.5,1+.005*Math.max(0,111-(d.unlockRound===111&&e.type==='lastBanquet'?110:(d.unlockRound||111))));
   Object.defineProperty(e,'speed',{configurable:true,get(){return base*v14RoundScale(round)*(e.type==='lastBanquet'?1+.08*(e.feastPhase||0):1)/roundMult().speed},set(){}});
   e.v14CourseSpeed=v14RoundScale(round);
 }
@@ -4376,6 +4397,7 @@ function v14DistanceT(value){
   while(lo+1<hi){const mid=(lo+hi)>>>1;if(d[mid]<value)lo=mid;else hi=mid}
   return (lo+Math.max(0,Math.min(1,(value-d[lo])/Math.max(1e-9,d[hi]-d[lo]))))/(d.length-1);
 }
+function v15EnemyArtScale(e){return window.innerWidth<600||mlWanted()?(e.feastArtScale||1):1}
 function v14PhaseSpan(e){
   const lane=banquetSegments().horizontals.findLast(seg=>seg.sign>0);
   // Before the last row: Feast-front to that row's ENTRY. On that row: front to END.
@@ -4546,7 +4568,7 @@ update=function(dt){if(S.banquetPrompt)return;v14RefreshLocks();const result=v14
 /* Only announce after the actual round starts, including automatic starts. */
 const v14Intro=r8ShowRoundIntro;
 r8ShowRoundIntro=function(round,options){
-  if(round>=111){if(!S.running)setMsg('▶ 라운드 시작을 눌러 코스 요리를 시작하세요.');return true}
+  if(round>=112){if(!S.running)setMsg('▶ 라운드 시작을 눌러 코스 요리를 시작하세요.');return true}
   return v14Intro(round,options);
 };
 
