@@ -191,6 +191,20 @@ body:not(.mobileLandscape) #app.gameVisible #info{flex:0 1 auto;min-height:0;max
  .settingsAudio{padding:12px;margin:12px 0;gap:5px}
 }
 
+
+.settingsExit{margin-top:22px;padding-top:16px;border-top:1px solid #60647e}
+#modalLayer.settingsOpen .settingsExit #r6Home{background:#3b354e;border-color:#958ba9}
+@media(min-width:1280px) and (min-height:700px){
+ #topbar{gap:4px 7px}
+ #topbar .stat{padding:5px 10px;min-height:50px}
+ #topbar .stat small{font-size:12px;font-weight:700;line-height:1.2}
+ #topbar .stat b{font-size:20px;line-height:1.1;margin-top:2px}
+ #topbar .badStat{min-width:165px}
+ #topbar .ctrl{font-size:12px;min-height:34px;padding:6px 10px}
+ #topbar #message{padding:6px 9px}
+ #topbar .indigestionEffect{font-size:10px}
+}
+
 </style>
 </head>
 <body>
@@ -861,7 +875,7 @@ const r3BaseCodex=openCodex,r3BaseCloseCodex=closeCodex,r3BaseDeal=deal,r3BaseAw
 openCodex=function(){r3Pause();r3BaseCodex()};closeCodex=function(){r3BaseCloseCodex();if(r3ModalPaused!==null){S.paused=r3ModalPaused;r3ModalPaused=null}if(r3ModalReturn){const f=r3ModalReturn;r3ModalReturn=null;f()}};ui.codexClose.onclick=closeCodex;
 deal=function(e,raw,t){r3BaseDeal(e,raw,t);if(t.type==='digestionKing'){const p=perfPosition(e);S.shots.push({kind:'kingBeam',x:t.x,y:t.y,tx:p.x,ty:p.y,ttl:.21,color:'#ffd166'});S.fx.push({kind:'ring',x:p.x,y:p.y,vx:0,vy:0,r:7,life:.22,color:'#fff0b4'});let linked=0;for(const o of S.enemies)if(o!==e&&!o.dead&&!o.digesting&&linked<5){const q=perfPosition(o);if(Math.hypot(q.x-t.x,q.y-t.y)<t.range){o.hp-=raw*.14*r8FusionBossMultiplier(t,o);S.shots.push({kind:'kingBeamThin',x:t.x,y:t.y,tx:q.x,ty:q.y,ttl:.16,color:'#ffb449'});linked++}}}};awakenTower=function(t){r3BaseAwaken(t);if(t.type==='digestionKing'){for(const e of S.enemies)e.hp-=Math.max(120,e.maxHp*.18)*r8FusionBossMultiplier(t,e);burst(t.x,t.y,'#ffd166',18)}};
 function r3Profile(){try{return JSON.parse(localStorage.getItem('nutritionTdProfile')||'{}')}catch(_){return {}}}function r3SaveProfile(v){try{localStorage.setItem('nutritionTdProfile',JSON.stringify(v))}catch(_){}}async function r3Api(action,payload={}){const r=await fetch(LEADERBOARD_API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=UTF-8'},body:JSON.stringify({action,...payload})});if(!r.ok)throw Error('server');return r.json()}function r3Mask(name){return name.length<2?name:name[0]+'○'.repeat(name.length-1)}
-openLeaderboard=function(){const p=r3Profile();openModal('🏆 리더보드 및 학교 코드 발급',`<div class="formGrid"><label>학교 코드<input id="r3SchoolCode" maxlength="5" value="${p.schoolCode||''}" placeholder="A7K2P"></label><label>학교명<input id="r3SchoolName" maxlength="30" value="${p.schoolName||''}" placeholder="새봄중학교"></label></div><div class="modalActions"><button id="r3LoadBoard" class="modalBtn primary">학교 TOP 5 조회</button><button id="r3IssueCode" class="modalBtn">학교 코드 발급</button></div><div id="r3BoardOut" class="leaderList"></div><p class="cool">서버 연결 실패와 기록 없음은 별도로 표시됩니다.</p>`);document.getElementById('r3LoadBoard').onclick=r3LoadBoard;document.getElementById('r3IssueCode').onclick=r3IssueCode};async function r3LoadBoard(){const code=document.getElementById('r3SchoolCode').value.replace(/\s/g,'').toUpperCase(),out=document.getElementById('r3BoardOut');out.textContent='조회 중…';try{const d=await r3Api('leaderboard',{schoolCode:code,limit:5});if(!d.valid){out.textContent='유효하지 않은 학교 코드입니다.';return}r3SaveProfile({...r3Profile(),schoolCode:code,schoolName:d.schoolName});const rows=d.scores||[];out.innerHTML=rows.length?rows.slice(0,5).map((r,i)=>`<div class="leaderItem ${i===0?'top':''}"><b>${i?(i+1)+'위':'👑 1위'}</b><span>${r.studentNumber||''} · ${r3Mask(r.studentName||'학생')}<br>R${r.round}</span><span class="leaderScore">${Number(r.score).toLocaleString()}점</span></div>`).join(''):'아직 이 학교에 등록된 성적이 없습니다.'}catch(_){out.textContent='리더보드 서버에 연결할 수 없습니다.'}}async function r3IssueCode(){const name=document.getElementById('r3SchoolName').value.trim(),out=document.getElementById('r3BoardOut');if(!name){out.textContent='학교명을 입력하세요.';return}out.textContent='학교 코드 확인 중…';try{const d=await r3Api('issueSchoolCode',{schoolName:name,normalizedSchoolName:name.replace(/\s+/g,' ').toLowerCase()});if(!d.schoolCode)throw Error();r3SaveProfile({...r3Profile(),schoolCode:d.schoolCode,schoolName:d.schoolName||name});document.getElementById('r3SchoolCode').value=d.schoolCode;out.innerHTML=`<div class="leaderItem top"><b>🏫</b><span>${d.existing?'이미 발급된 학교 코드':'학교 코드 발급 완료'}<br>${d.schoolName||name}</span><span class="leaderScore">${d.schoolCode}</span></div>`}catch(_){out.textContent='리더보드 서버에 연결할 수 없습니다.'}}
+let r3LoadBoard;
 openScoreRegistration=function(){if(S.sandbox){ui.overlay.classList.add('show');ui.overTitle.textContent='샌드박스 종료';ui.overText.innerHTML='<button class="restart" id="r3SandboxRetry">🔄 재시작</button> <button class="restart" id="r3SandboxHome">⌂ 메인 화면</button>';document.getElementById('r3SandboxRetry').onclick=restartGame;document.getElementById('r3SandboxHome').onclick=returnToLobby;return}const p=r3Profile(),card=ui.scoreModal.querySelector('.modalCard');card.innerHTML=`<div class="modalHead"><h2>🏁 성적 등록</h2></div><p class="modalText">완료 라운드 ${recordCompletedRound()} · 점수 ${S.score.toLocaleString()}점</p><div class="formGrid"><label>학교 코드<input id="r3ResultCode" maxlength="5" value="${p.schoolCode||''}"></label><label>학교명<input id="r3ResultSchool" maxlength="30" value="${p.schoolName||''}"></label><label>학번<input id="r3ResultNo" maxlength="12" value="${p.studentNumber||''}"></label><label>이름<input id="r3ResultName" maxlength="20" value="${p.studentName||''}"></label><label><input id="r3Remember" type="checkbox" ${p.remember!==false?'checked':''}> 이 기기에 정보 기억하기</label></div><p id="r3ResultError" class="cool"></p><div class="modalActions"><button id="r3SubmitScore" class="modalBtn primary">성적 등록</button><button id="r3SkipScore" class="modalBtn">건너뛰기</button></div>`;ui.scoreModal.classList.add('open');document.getElementById('r3SubmitScore').onclick=r3SubmitScore;document.getElementById('r3SkipScore').onclick=()=>{ui.scoreModal.classList.remove('open');returnToLobby()}};async function r3SubmitScore(){const code=document.getElementById('r3ResultCode').value.replace(/\s/g,'').toUpperCase(),schoolName=document.getElementById('r3ResultSchool').value.trim(),studentNumber=document.getElementById('r3ResultNo').value.trim(),studentName=document.getElementById('r3ResultName').value.trim(),out=document.getElementById('r3ResultError');if(!/^[A-Z0-9]{5}$/.test(code)||!schoolName||!studentNumber||!studentName){out.textContent='학교 코드, 학교명, 학번, 이름을 확인하세요.';return}try{const d=await r3Api('submitScore',{recordId:`${Date.now()}-${Math.random().toString(36).slice(2)}`,schoolCode:code,schoolName,studentNumber,studentName,round:recordCompletedRound(),score:S.score,mode:'normal'});if(!d.ok)throw Error();if(document.getElementById('r3Remember').checked)r3SaveProfile({schoolCode:code,schoolName,studentNumber,studentName,remember:true});out.textContent='✅ 학교 리더보드에 등록되었습니다.'}catch(_){out.textContent='리더보드 서버에 연결할 수 없습니다.'}}
 openGuide=function(){openModal('🧠 게임 설명',`<p><b>자유 설치:</b> 소화관을 제외한 18×18 정사각형 격자에 타워를 놓습니다. 빈 곳 또는 Esc로 선택을 해제합니다.</p><p><b>효소 대응표:</b> 아밀레이스·탄수 효소→탄수화물, 위산/펩신·단백질 효소→단백질, 쓸개즙·라이페이스→지방입니다.</p><p><b>라이프:</b> 소형 -1, 중형 -2, 대형 -4이며 보스가 출구를 통과하면 즉시 패배합니다.</p><p><b>Lv6 입:</b> 마라탕 계열을 제외한 가장 큰 보스 또는 영양소를 하위 분해 없이 완전 소화합니다.</p>`)};openCodex=function(){r3Pause();const order=['glucose','maltose','starch','amino','peptide','protein','fatty','fatStage3','fatblob','oyster','spicyOyster','hamburger','oysterBoss','spicyHamburger','pizza','spicyOysterBoss','spicyPizza','chicken','spicyChicken','malatang','spicyMalatang'];ui.codexBody.innerHTML=`<div class="small"><b>시각 규칙</b> · 탄수화물=하늘색 육각형 · 단백질=연보라 사각형 · 지방=노란 물방울 · 단계가 높을수록 조금 더 큽니다.<br><b>매운맛</b> · 0~33% +10%, 34~66% +20%, 67~100% +35% 속도 · 유산균이 감소시킵니다.<br><b>분해</b> · 햄버거→녹말+단백질+지방 덩어리 · 피자→햄버거×2 · 치킨→피자×2 · 마라탕→치킨×2</div><div class="codexGrid">${order.map(k=>{const d=ENEMY_DEFS[k];return `<div class="codexItem"><b>${d.emoji||''} ${d.name}</b><div class="small">HP ${d.hp.toLocaleString()} · ${d.boss?'보스':d.special?'특수':'일반'} · 속도 ${d.speed}</div></div>`}).join('')}</div>`;ui.codexWrap.classList.add('open')};upgradeTower=function(t){if(t!==S.selectedTower||t.level>=5)return;const cost=upgradeCost(t);if(!S.sandbox&&S.gold<cost){setMsg('생체 에너지가 부족하여 강화할 수 없습니다.');return}S.gold-=S.sandbox?0:cost;const m=UPG[t.level-1].mul;t.level++;if(t.level===5){t.damage*=2.5;t.rate/=2.5;t.range*=1.25;awakenTower(t)}else{t.damage*=m;t.rate/=Math.sqrt(m);t.range*=1+(m-.9)*.16}showTowerInfo(t);setMsg(`${TOWER_DEFS[t.type].name}이(가) 성장했습니다.`)};sellSelected=function(){const t=S.selectedTower;if(!t)return;S.gold+=Math.floor(t.spent*.7);const c=cells.find(z=>z.col===t.col&&z.row===t.row);if(c)c.used=false;S.towers=S.towers.filter(x=>x!==t);S.selectedTower=null;ui.sell.disabled=true;showBuildInfo('mouth');setMsg('타워를 판매했습니다.')};rushNextRound=function(){if(S.gameOver||!S.running)return;const next=S.round+1;S.round=next;S.activeWaves.push(next);enqueueRound(next,true);S.gold+=100;setMsg(`⏩ 라운드 ${next} 강제 시작! 생체 에너지 +100`)};drawGhost=function(){if(!S.selectedBuild)return;const d=TOWER_DEFS[S.selectedBuild],c=cells.find(z=>Math.hypot(z.x-S.hover.x,z.y-S.hover.y)<z.size*.52&&!z.used);if(!c)return;ctx.save();ctx.globalAlpha=.14;ctx.fillStyle=d.color;ctx.beginPath();ctx.arc(c.x,c.y,d.range*gridSize,0,TAU);ctx.fill();ctx.restore()};openVersion=function(){openModal('ⓘ 버전 정보','<p><b>영양소 대습격</b> · Classroom Edition</p><p>순수 HTML/CSS/Canvas 단일 파일 버전입니다. 생체 에너지와 소화 효소로 소화관을 방어합니다.</p>')};ui.guide.onclick=openGuide;ui.leader.onclick=openLeaderboard;ui.version.onclick=openVersion;ui.sell.onclick=sellSelected;ui.rush.onclick=rushNextRound;resize();buildTowerPanel();showBuildInfo('mouth');
 drawGhost=function(){if(!S.selectedBuild)return;const d=TOWER_DEFS[S.selectedBuild],near=cells.concat(trackCells).find(z=>Math.hypot(z.x-S.hover.x,z.y-S.hover.y)<z.size*.55),valid=near&&cells.includes(near)&&!near.used;if(!near)return;ctx.save();ctx.globalAlpha=.12;ctx.fillStyle=valid?d.color:'#ff6068';ctx.beginPath();ctx.arc(near.x,near.y,d.range*gridSize,0,TAU);ctx.fill();ctx.globalAlpha=valid ? 0.72 : 0.5;ctx.translate(near.x,near.y);r4TowerCore(ctx,S.selectedBuild,1);ctx.restore()};
@@ -873,7 +887,13 @@ function r3RoundNotice(round){S.seenNotices||={};const notes={1:'초반에는 �
 const r3StartRound=startRound,r3NextRound=nextRound,r3SpawnOne=spawnOne,r3ResolveDeath=resolveDeath;startRound=function(){const wasReady=S.roundReady,wave=S.round;r3StartRound();if(wasReady&&S.running)r3RoundNotice(wave)};nextRound=function(){r3NextRound();r3RoundNotice(S.round)};spawnOne=function(entry){const data=typeof entry==='string'?{type:entry,wave:S.round}:entry;const before=S.enemies.length;r3SpawnOne(data);const e=S.enemies[S.enemies.length-1];if(S.enemies.length>before&&e?.special==='oyster'&&!e.boss){e.speed*=.985+Math.random()*.03;e.t=Math.max(0,e.t-Math.random()*.004)}};resolveDeath=function(e){if(e.dead||e.deathResolved)return;const p=e.special==='oyster'?perfPosition(e):null;r3ResolveDeath(e);if(p)S.fx.push({kind:'split',x:p.x,y:p.y,vx:14,vy:-18,r:2,life:.2,color:'#effffb'});};ui.start.onclick=startRound;
 async function r3SubmitScore(){const code=document.getElementById('r3ResultCode').value.replace(/\s/g,'').toUpperCase(),schoolName=document.getElementById('r3ResultSchool').value.trim(),studentNumber=document.getElementById('r3ResultNo').value.trim(),studentName=document.getElementById('r3ResultName').value.trim(),out=document.getElementById('r3ResultError'),remember=document.getElementById('r3Remember').checked;if(!/^[A-Z0-9]{5}$/.test(code)||!schoolName||!studentNumber||!studentName){out.textContent='학교 코드, 학교명, 학번, 이름을 확인하세요.';return}out.textContent='성적 등록 중…';try{const d=await r3Api('submitScore',{recordId:`${Date.now()}-${Math.random().toString(36).slice(2)}`,schoolCode:code,schoolName,studentNumber,studentName,round:recordCompletedRound(),score:S.score,mode:'normal'});if(!d.ok)throw Error('server');if(remember)r3SaveProfile({schoolCode:code,schoolName,studentNumber,studentName,remember:true});else try{localStorage.removeItem('nutritionTdProfile')}catch(_){};out.innerHTML='✅ 학교 리더보드에 등록되었습니다.<div class="choiceActions"><button id="r3ScoreRetry" class="modalBtn primary">🔄 재도전</button><button id="r3ScoreHome" class="modalBtn">⌂ 메인 화면</button></div>';document.getElementById('r3ScoreRetry').onclick=()=>{ui.scoreModal.classList.remove('open');restartGame()};document.getElementById('r3ScoreHome').onclick=()=>{ui.scoreModal.classList.remove('open');returnToLobby()}}catch(_){out.textContent='리더보드 서버에 연결할 수 없습니다.'}}
 function r3IssueScreen(){openModal('🏫 새 학교 코드 발급',`<div class="formGrid"><label>학교 이름<input id="r3IssueSchool" maxlength="30" placeholder="예: 새봄중학교"></label></div><div id="r3IssueOut" class="cool"></div><div class="modalActions"><button id="r3IssueSubmit" class="modalBtn primary">학교 코드 확인 및 발급</button><button id="r3IssueBack" class="modalBtn">조회 화면으로 돌아가기</button><button id="r3IssueCancel" class="modalBtn">취소</button></div>`);let busy=false;document.getElementById('r3IssueSubmit').onclick=async()=>{if(busy)return;const name=document.getElementById('r3IssueSchool').value.trim(),out=document.getElementById('r3IssueOut');if(!name){out.textContent='학교 이름을 입력하세요.';return}busy=true;out.textContent='학교 코드를 확인하고 있습니다…';try{const d=await r3Api('issueSchoolCode',{schoolName:name,normalizedSchoolName:name.replace(/\s+/g,' ').toLowerCase()});if(!d.schoolCode)throw Error('invalid response');r3SaveProfile({...r3Profile(),schoolCode:d.schoolCode,schoolName:d.schoolName||name});ui.modalBody.innerHTML=`<p>${d.existing?'학교 코드는 이미 발급되어 있습니다.':'학교 코드가 발급되었습니다.'}</p><div class="leaderItem top"><b>🏫</b><span>${d.schoolName||name}</span><span class="leaderScore">${d.schoolCode}</span></div><div class="modalActions"><button id="r3IssueDone" class="modalBtn primary">확인</button></div>`;document.getElementById('r3IssueDone').onclick=openLeaderboard}catch(_){busy=false;out.textContent='리더보드 서버에 연결할 수 없습니다. 다시 시도하세요.'}};document.getElementById('r3IssueBack').onclick=openLeaderboard;document.getElementById('r3IssueCancel').onclick=closeModal}
-openLeaderboard=function(){const p=r3Profile();openModal('🏆 리더보드 및 학교 코드 발급',`<div class="formGrid"><label>학교 코드<input id="r3SchoolCode" maxlength="5" value="${p.schoolCode||''}" placeholder="A7K2P"></label></div><div class="modalActions"><button id="r3LoadBoard" class="modalBtn primary">학교 TOP 5 조회</button><button id="r3IssueCode" class="modalBtn">새 학교 코드 발급</button></div><div id="r3BoardOut" class="leaderList"></div><p class="cool">잘못된 코드, 기록 없음, 서버 연결 실패는 서로 다르게 안내됩니다.</p>`);document.getElementById('r3LoadBoard').onclick=r3LoadBoard;document.getElementById('r3IssueCode').onclick=r3IssueScreen};
+openLeaderboard=function({readOnly=false}={}){
+  const p=r3Profile();
+  openModal(readOnly?'🏆 리더보드 · 조회 전용':'🏆 리더보드 및 학교 코드 발급',`<div class="formGrid"><label>학교 코드<input id="r3SchoolCode" maxlength="5" placeholder="A7K2P"></label></div><div class="modalActions"><button id="r3LoadBoard" class="modalBtn primary">학교 TOP 5 조회</button>${readOnly?'':'<button id="r3IssueCode" class="modalBtn">새 학교 코드 발급</button>'}</div><div id="r3BoardOut" class="leaderList"></div><p class="cool">${readOnly?'현재 게임의 점수나 기록은 등록하지 않습니다.':'잘못된 코드, 기록 없음, 서버 연결 실패는 서로 다르게 안내됩니다.'}</p>`);
+  const code=document.getElementById('r3SchoolCode');code.value=p.schoolCode||'';code.dataset.readOnly=String(readOnly);
+  document.getElementById('r3LoadBoard').onclick=r3LoadBoard;
+  const issue=document.getElementById('r3IssueCode');if(issue)issue.onclick=r3IssueScreen;
+};
 const r3RestartGame=restartGame;restartGame=function(){r3ModalPaused=null;r3ModalReturn=null;r3RestartGame()};
 ui.guide.onclick=openGuide;ui.leader.onclick=openLeaderboard;
 function r3SetHover(e){const p=r7CanvasPoint(e);S.hover.x=p.x;S.hover.y=p.y}canvas.addEventListener('pointermove',r3SetHover,{passive:true});canvas.addEventListener('pointerdown',r3SetHover,{passive:true});
@@ -1458,7 +1478,7 @@ function r6DrawMalaFood(c,r){c.fillStyle='#7c2631';c.beginPath();c.ellipse(0,4,r
 function r6DrawGluttonFood(c,r){c.fillStyle='#f8e5bc';c.beginPath();c.ellipse(0,3,r*.74,r*.46,0,0,TAU);c.fill();c.strokeStyle='#b97742';c.lineWidth=2;c.stroke();c.fillStyle='#e5a34d';c.beginPath();c.roundRect(-r*.52,-r*.28,r*.29,r*.11,3);c.fill();c.fillStyle='#733e26';c.fillRect(-r*.52,-r*.17,r*.29,r*.10);c.fillStyle='#f6d669';c.fillRect(-r*.52,-r*.07,r*.29,r*.09);c.fillStyle='#f2c35e';c.beginPath();c.moveTo(r*.02,-r*.30);c.lineTo(r*.50,-r*.08);c.lineTo(r*.12,r*.08);c.closePath();c.fill();c.fillStyle='#c56c43';c.beginPath();c.moveTo(r*.24,r*.06);c.quadraticCurveTo(r*.46,r*.12,r*.39,r*.31);c.quadraticCurveTo(r*.18,r*.35,r*.14,r*.20);c.closePath();c.fill();c.fillStyle='#efc784';c.save();c.translate(-r*.03,r*.22);c.rotate(.28);c.fillRect(-r*.19,-r*.055,r*.38,r*.11);c.restore();c.strokeStyle='#f6e0bd';c.lineWidth=2;c.beginPath();c.moveTo(-r*.05,-r*.02);c.bezierCurveTo(r*.10,r*.05,r*.18,r*.13,r*.29,r*.19);c.stroke();c.fillStyle='#6eaa63';c.beginPath();c.moveTo(-r*.14,r*.05);c.lineTo(r*.05,r*.14);c.lineTo(-r*.04,r*.32);c.lineTo(-r*.23,r*.20);c.closePath();c.fill()}
 
 r3Mask=function(value){const chars=Array.from(String(value||''));if(chars.length<=1)return '0';if(chars.length===2)return chars[0]+'0';return chars[0]+'0'.repeat(chars.length-2)+chars.at(-1)};
-r3LoadBoard=async function(){const input=document.getElementById('r3SchoolCode'),out=document.getElementById('r3BoardOut'),code=input.value.replace(/\s/g,'').toUpperCase();out.textContent='조회 중…';try{const data=await r3Api('leaderboard',{schoolCode:code,limit:5});if(!data.valid){out.textContent='유효하지 않은 학교 코드입니다.';return}r3SaveProfile({...r3Profile(),schoolCode:code,schoolName:r5CanonicalSchoolName(data.schoolName||'')});const rows=r5BestRows(data.scores||[],code).slice(0,5);out.replaceChildren();if(!rows.length){out.textContent='아직 이 학교에 등록된 성적이 없습니다.';return}rows.forEach((row,index)=>{const item=document.createElement('div'),rank=document.createElement('b'),who=document.createElement('span'),score=document.createElement('span');item.className=`leaderItem ${index===0?'top':''}`;if(index===0){rank.style.whiteSpace='nowrap';rank.append('👑',document.createElement('br'),'1등')}else rank.textContent=`${index+1}위`;who.append(`${row.studentNumber||''} · ${r3Mask(row.studentName||'학생')}`,document.createElement('br'),`R${row.round||0}`);score.className='leaderScore';score.textContent=`${Number(row.score||0).toLocaleString()}점`;item.append(rank,who,score);out.append(item)})}catch(_){out.textContent='리더보드 서버에 연결할 수 없습니다.'}};
+r3LoadBoard=async function(){const input=document.getElementById('r3SchoolCode'),out=document.getElementById('r3BoardOut'),code=input.value.replace(/\s/g,'').toUpperCase(),readOnly=input.dataset.readOnly==='true';out.textContent='조회 중…';try{const data=await r3Api('leaderboard',{schoolCode:code,limit:5});if(!data.valid){out.textContent='유효하지 않은 학교 코드입니다.';return}if(!readOnly)r3SaveProfile({...r3Profile(),schoolCode:code,schoolName:r5CanonicalSchoolName(data.schoolName||'')});const rows=r5BestRows(data.scores||[],code).slice(0,5);out.replaceChildren();if(!rows.length){out.textContent='아직 이 학교에 등록된 성적이 없습니다.';return}rows.forEach((row,index)=>{const item=document.createElement('div'),rank=document.createElement('b'),who=document.createElement('span'),score=document.createElement('span');item.className=`leaderItem ${index===0?'top':''}`;if(index===0){rank.style.whiteSpace='nowrap';rank.append('👑',document.createElement('br'),'1등')}else rank.textContent=`${index+1}위`;who.append(`${row.studentNumber||''} · ${r3Mask(row.studentName||'학생')}`,document.createElement('br'),`R${row.round||0}`);score.className='leaderScore';score.textContent=`${Number(row.score||0).toLocaleString()}점`;item.append(rank,who,score);out.append(item)})}catch(_){out.textContent='리더보드 서버에 연결할 수 없습니다.'}};
 
 const R6_SPICY_BOSS={hamburger:'spicyHamburger',oysterBoss:'spicyOysterBoss',pizza:'spicyPizza',chicken:'spicyChicken',malatang:'spicyMalatang',oyster:'spicyOyster'};
 function r6SyncSandboxBossLabels(){document.querySelectorAll('.sandboxBosses [data-spawn]').forEach(button=>{const base=button.dataset.spawn,spicy=S.sandboxSpicySpawn&&R6_SPICY_BOSS[base],actual=spicy||base,d=ENEMY_DEFS[actual];button.textContent=`${spicy?'🌶️ ':''}${d.emoji||''} ${base==='gluttonKing'?'폭식의 왕':d.name.replace('매운 ','')}`})}
@@ -1491,6 +1511,10 @@ applyVolume=function(){masterVolume=r7SafeVolume(masterVolume,.3);r7SetAudioVolu
 r6AttemptPlay=function(track,reason){const a=audio[track];if(!a||!bgmEnabled||masterVolume<=0||r7AudioPending[track]||!a.paused)return;try{r7AudioPending[track]=true;const playing=a.play();if(playing&&typeof playing.then==='function')playing.then(()=>{bgmStarted=true;r6BgmLastFailure=''}).catch(error=>{r6BgmLastFailure=error?.name||reason||'play-failed';r7AudioFailure(`${track}-${reason||'play'}`,error)}).finally(()=>{r7AudioPending[track]=false});else{bgmStarted=true;r7AudioPending[track]=false}}catch(error){r7AudioPending[track]=false;r6BgmLastFailure=error?.name||reason||'play-failed';r7AudioFailure(`${track}-${reason||'play'}`,error)}};
 r6Fade=function(track,target,duration=.9){const a=audio[track];if(!a)return;const token=++r6AudioTickets[track],from=r7SafeVolume(a.volume,0),to=r7SafeVolume(target,0),seconds=Number.isFinite(Number(duration))&&Number(duration)>0?Number(duration):0;if(to>0&&bgmEnabled)r6AttemptPlay(track,'play-rejected');if(seconds===0){r7SetAudioVolume(track,to);if(to===0){try{a.pause();a.currentTime=0}catch(error){r7AudioFailure(`${track}-pause`,error)}}return}const startedAt=performance.now();const tick=now=>{if(token!==r6AudioTickets[track])return;const progress=Math.max(0,Math.min(1,(Number(now)-startedAt)/(seconds*1000)));r7SetAudioVolume(track,from+(to-from)*progress);if(progress<1){backgroundQueueFrame('fade-'+track,tick);return}if(to===0){try{a.pause();a.currentTime=0}catch(error){r7AudioFailure(`${track}-pause`,error)}}};backgroundQueueFrame('fade-'+track,tick)};
 switchBgm=function(track){const active=track==='game'?'game':'main',other=active==='main'?'game':'main';r6Fade(other,0,.85);if(!bgmEnabled||masterVolume<=0){bgmStarted=false;return}bgmStarted=false;r6Fade(active,masterVolume,1)};
+// Transfer the existing pause snapshot without reopening Settings or resuming a frame.
+function settingsOpenPage(open){
+  r3ModalReturn=null;ui.modal.classList.remove('open','settingsOpen');open();
+}
 openSettings=function(){
   openModal('⚙️ 설정',`<section class="settingsAudio" aria-label="오디오 설정">
     <label for="r6Vol">🔊 BGM 음량</label>
@@ -1498,7 +1522,7 @@ openSettings=function(){
     <output id="r6VolOut" for="r6Vol" class="settingsValue">${Math.round(r7SafeVolume(masterVolume,.3)*100)}%</output>
     <div class="settingsBgmRow"><span id="settingsBgmLabel">BGM</span><button id="settingsBgmToggle" type="button" aria-labelledby="settingsBgmLabel settingsBgmToggle" aria-pressed="${bgmEnabled}">${bgmEnabled?'ON':'OFF'}</button></div>
     <p class="cool" id="r6BgmState"></p>
-  </section><div class="modalActions"><button id="r6Codex" class="modalBtn">📖 영양소 도감</button><button id="r6Restart" class="modalBtn">↻ 게임 재시작</button><button id="r6Home" class="modalBtn">⌂ 게임 끝내고 메인화면으로 돌아가기</button><button id="r6ClearProfile" class="modalBtn">저장된 학교/학생 정보 지우기</button><button id="r6Back" class="modalBtn primary">게임으로 돌아가기</button></div>`);
+  </section><div class="modalActions"><button id="r6Codex" class="modalBtn">📖 영양소 도감</button><button id="r6Restart" class="modalBtn">↻ 게임 재시작</button><button id="r6Leaderboard" class="modalBtn">🏆 리더보드 보기</button><button id="r6Back" class="modalBtn primary">게임으로 돌아가기</button></div><div class="settingsExit"><button id="r6Home" class="modalBtn">⌂ 게임 끝내고 메인화면으로 돌아가기</button></div>`);
   const volume=document.getElementById('r6Vol');
   volume.oninput=()=>{
     masterVolume=r7SafeVolume(Number(volume.value)/100,.3);
@@ -1508,10 +1532,10 @@ openSettings=function(){
     if(bgmEnabled&&masterVolume>0)r6RetryBgm();syncBgmButtons();
   };
   document.getElementById('settingsBgmToggle').onclick=()=>toggleBgm();syncBgmButtons();
-  document.getElementById('r6Codex').onclick=()=>{r3ModalReturn=openSettings;closeModal();openCodex()};
+  document.getElementById('r6Codex').onclick=()=>settingsOpenPage(openCodex);
   document.getElementById('r6Restart').onclick=()=>r3Confirm('현재 진행 상황이 초기화됩니다. 게임을 재시작하시겠습니까?',restartGame);
   document.getElementById('r6Home').onclick=()=>r3Confirm('현재 진행 상황이 사라집니다. 게임을 포기하고 로비로 이동하시겠습니까?',returnToLobby);
-  document.getElementById('r6ClearProfile').onclick=()=>{try{localStorage.removeItem('nutritionTdProfile')}catch(_){}};
+  document.getElementById('r6Leaderboard').onclick=()=>settingsOpenPage(openLeaderboard);
   document.getElementById('r6Back').onclick=closeModal;
 };ui.settings.onclick=openSettings;
 
@@ -1652,10 +1676,10 @@ function r8SubjectParticle(value){
   if(!syllables.length)return '이';
   return ((syllables.at(-1).charCodeAt(0)-0xac00)%28)===0?'가':'이';
 }
-function r8RenderNamedIntro(type,suffix){
+function r8RenderNamedIntro(type,suffix,first=!S.seenNotices?.[`first-${type}`]){
   if(S.courseNotice&&S.elapsed<S.courseNotice.until)return true;
   const d=ENEMY_DEFS[type];if(!d)return false;
-  const name=document.createElement('strong');name.textContent=d.name;if(d.boss)name.className='bossIntroName';else name.style.fontWeight='inherit';
+  const name=document.createElement('strong');name.textContent=d.name;if(first)name.className='bossIntroName';else name.style.fontWeight='inherit';
   ui.msg.replaceChildren(name,document.createTextNode(suffix===undefined?`${r8SubjectParticle(d.name)} 처음 출현합니다.`:suffix));
   S.messageTimer=0;
   return true;
@@ -1666,7 +1690,7 @@ r5NoticeName=function(type,tail){
   const key=`first-${type}`;
   if(S.seenNotices[key])return false;
   S.seenNotices[key]=true;
-  return r8RenderNamedIntro(type,tail);
+  return r8RenderNamedIntro(type,tail,true);
 };
 function r8RenderIntroText(text){if(S.courseNotice&&S.elapsed<S.courseNotice.until)return;ui.msg.textContent=text;S.messageTimer=0}
 const R8_FIRST_TYPES={1:'glucose',2:'maltose',4:'starch',6:'amino',7:'peptide',8:'protein',9:'oyster',13:'fatty',14:'fatStage3',15:'fatblob',17:'spicyOyster'};
@@ -2485,13 +2509,15 @@ function perfPaintEnemyBody(e, r, includeFace) {
 drawEnemies = function() {
   perfDrawEnemies(S.enemies);
 };
+function wideGameArt(){return window.innerWidth>=1280&&window.innerHeight>=700}
 function perfDrawEnemies(enemies) {
+  const visualScale=wideGameArt()?1.15:1;
   for (const e of enemies) {
     const p = e.digesting ? {x: e.digestX, y: e.digestY} : banquetVisiblePosition(e,perfPosition(e));
     ctx.save(); ctx.translate(p.x, p.y);
     const total = e.digestTotal || (e.boss ? 5 : 3.5);
     const ds = e.digesting ? Math.max(.25, e.digesting / total) : 1;
-    ctx.scale(ds*v15EnemyArtScale(e), ds*v15EnemyArtScale(e));
+    ctx.scale(ds*v15EnemyArtScale(e)*visualScale, ds*v15EnemyArtScale(e)*visualScale);
     const r = (e.boss ? 29 : 10.5 + e.tier * 2.35) * e.size, ratio = e.hp / e.maxHp;
     const filter = e.type==='lastBanquet' ? 'none' : e.boss && ratio <= .33 ? 'grayscale(1) brightness(.67)' :
       e.boss && ratio <= .66 ? 'grayscale(.6) brightness(.85)' : 'none';
@@ -3306,6 +3332,7 @@ function fullMapTowerSprite(t){
   fullMapRender.sprites.set(key,sprite);fullMapRender.builds++;return sprite;
 }
 drawTowers=function(){
+  const visualScale=wideGameArt()?1.08:1;
   const style=dpr+':'+ctx.font+':'+ctx.lineCap+':'+ctx.lineJoin;
   if(fullMapRender.style!==style){fullMapRender.style=style;fullMapRender.sprites.clear()}
   for(const t of S.towers){
@@ -3317,6 +3344,7 @@ drawTowers=function(){
     if(t.type==='atp'&&S.running&&t.farm>0){
       ctx.strokeStyle='rgba(255,214,107,.42)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,0,23+t.farm*2,0,TAU);ctx.stroke();
     }
+    ctx.scale(visualScale,visualScale);
     if(t.type==='digestionKing'){r3Crusher(t);drawTowerGauge(t)}
     else{const sprite=fullMapTowerSprite(t);ctx.drawImage(sprite.surface,-sprite.half,-sprite.half,sprite.surface.width/dpr,sprite.surface.height/dpr)}
     ctx.restore();
@@ -3360,9 +3388,10 @@ drawXrayTowers=function(){
 const defaultSchool={code:'JF9W9',name:'해양중학교'};
 const schoolLeaderboard=openLeaderboard;
 openLeaderboard=function(){
-  schoolLeaderboard();
-  const code=document.getElementById('r3SchoolCode');
-  if(code){code.value=defaultSchool.code;code.title=defaultSchool.name}
+  const readOnly=ui.lobby.classList.contains('hidden');
+  schoolLeaderboard({readOnly});
+  const code=document.getElementById('r3SchoolCode'),saved=r3Profile().schoolCode||'';
+  if(code){code.value=readOnly?saved:(saved||defaultSchool.code);code.title=code.value===defaultSchool.code?defaultSchool.name:''}
 };
 ui.leader.onclick=openLeaderboard;
 const schoolScoreRegistration=openScoreRegistration;
@@ -4441,6 +4470,7 @@ spawnOne=function(entry){
     }
     v14RefreshLocks();
   }
+  const spawned=S.enemies[start];if(spawned)r5NoticeName(spawned.type);
   return result;
 };
 
