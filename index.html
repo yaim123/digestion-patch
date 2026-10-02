@@ -205,6 +205,12 @@ body:not(.mobileLandscape) #app.gameVisible #info{flex:0 1 auto;min-height:0;max
  #topbar .indigestionEffect{font-size:10px}
 }
 
+
+#sandboxTools .sandboxHead{display:flex;align-items:center;justify-content:space-between;gap:5px}
+#sandboxMinimize{flex:none;min-width:30px;height:30px;padding:0;border:1px solid #75bcb8;border-radius:6px;background:#214550;color:#fff;font-size:20px;font-weight:800;cursor:pointer;touch-action:manipulation}
+#sandboxTools.isMinimized>:not(.sandboxHead){display:none!important}
+#sandboxTools.isMinimized{max-height:none;overflow:hidden}
+
 </style>
 </head>
 <body>
@@ -815,7 +821,7 @@ Object.assign(TOWER_DEFS,{carbEnzyme:{...TOWER_DEFS.carbEnzyme,cost:500,range:2.
 function r5Limited(type){return (type==='atp'||type==='digestCannon')&&S.towers.filter(t=>t.type===type).length>=3}function r5LimitText(type){return type==='atp'?'마이토콘드리아는 최대 3개입니다.':'소화 캐논은 최대 3개입니다.'}function r5ShownCost(t){return t.type==='digestCannon'?CANNON_STAGES[t.level-1]?.cost||0:t.level<5?upgradeCost(t):0}
 /* Actual encounter data: fixed first appearances use these base values; only later
    appearances receive the small, one-time wave multiplier in enemy(). */
-Object.assign(ENEMY_DEFS,{oyster:{...ENEMY_DEFS.oyster,children:['peptide'],speed:132},spicyOyster:{...ENEMY_DEFS.spicyOyster,children:['peptide'],speed:150},hamburger:{...ENEMY_DEFS.hamburger,hp:15000,speed:24,unlockRound:20},oysterBoss:{...ENEMY_DEFS.oysterBoss,hp:18000,speed:85,unlockRound:32,children:['peptide','peptide']},spicyHamburger:{...ENEMY_DEFS.spicyHamburger,hp:15000,speed:25,unlockRound:34},pizza:{...ENEMY_DEFS.pizza,hp:90000,speed:19,unlockRound:40},spicyOysterBoss:{...ENEMY_DEFS.spicyOysterBoss,hp:18000,speed:90,unlockRound:42,children:['peptide','peptide']},spicyPizza:{...ENEMY_DEFS.spicyPizza,hp:90000,speed:21,unlockRound:52},chicken:{...ENEMY_DEFS.chicken,hp:400000,speed:15,unlockRound:60},spicyChicken:{...ENEMY_DEFS.spicyChicken,hp:400000,speed:17,unlockRound:72},malatang:{...ENEMY_DEFS.malatang,hp:1500000,speed:10,unlockRound:80},spicyMalatang:{...ENEMY_DEFS.spicyMalatang,hp:1500000,speed:12,unlockRound:92},gluttonKing:{name:'폭식의 왕 — 무한리필 뷔페',emoji:'🍽️',hp:3500000,speed:8.5,tier:9,color:'#e7b969',kind:'boss',boss:true,fixedHp:true,unlockRound:100,size:1.52,children:['malatang','spicyMalatang','chicken','spicyChicken','pizza','spicyPizza','oysterBoss','spicyOysterBoss','hamburger','spicyHamburger']}});
+Object.assign(ENEMY_DEFS,{oyster:{...ENEMY_DEFS.oyster,children:['peptide'],speed:132},spicyOyster:{...ENEMY_DEFS.spicyOyster,children:['peptide'],speed:150},hamburger:{...ENEMY_DEFS.hamburger,hp:15000,speed:24,unlockRound:20},oysterBoss:{...ENEMY_DEFS.oysterBoss,hp:18000,speed:85,unlockRound:32,children:['peptide','peptide']},spicyHamburger:{...ENEMY_DEFS.spicyHamburger,hp:15000,speed:25,unlockRound:34},pizza:{...ENEMY_DEFS.pizza,hp:90000,speed:19,unlockRound:40},spicyOysterBoss:{...ENEMY_DEFS.spicyOysterBoss,hp:18000,speed:90,unlockRound:42,children:['peptide','peptide']},spicyPizza:{...ENEMY_DEFS.spicyPizza,hp:90000,speed:21,unlockRound:52},chicken:{...ENEMY_DEFS.chicken,hp:400000,speed:15,unlockRound:60},spicyChicken:{...ENEMY_DEFS.spicyChicken,hp:400000,speed:17,unlockRound:72},malatang:{...ENEMY_DEFS.malatang,hp:1500000,speed:10,unlockRound:80},spicyMalatang:{...ENEMY_DEFS.spicyMalatang,hp:1500000,speed:12,unlockRound:92},gluttonKing:{name:'폭식의 왕',emoji:'🍽️',hp:3500000,speed:8.5,tier:9,color:'#e7b969',kind:'boss',boss:true,fixedHp:true,unlockRound:100,size:1.52,children:['malatang','spicyMalatang','chicken','spicyChicken','pizza','spicyPizza','oysterBoss','spicyOysterBoss','hamburger','spicyHamburger']}});
 BOSS_SCHEDULE.splice(0,BOSS_SCHEDULE.length,{round:20,type:'hamburger',announce:true},{round:32,type:'oysterBoss',announce:true},{round:34,type:'spicyHamburger',announce:true},{round:40,type:'pizza',announce:true},{round:42,type:'spicyOysterBoss',announce:true},{round:52,type:'spicyPizza',announce:true},{round:60,type:'chicken',announce:true},{round:72,type:'spicyChicken',announce:true},{round:80,type:'malatang',announce:true},{round:92,type:'spicyMalatang',announce:true},{round:100,type:'gluttonKing',announce:true});
 createInitialState=function(sandbox=false){return {round:1,gold:sandbox?999999:250,lives:20,enemies:[],towers:[],shots:[],fx:[],spawnQueue:[],spawnTimer:0,activeWaves:[],running:false,paused:false,speed:1,autoStart:false,autoTimer:0,skillCD:0,globalStun:0,globalBuff:0,globalAcid:0,selectedBuild:'mouth',selectedTower:null,gameOver:false,roundReady:true,hasStartedOnce:false,elapsed:0,last:performance.now(),messageTimer:0,discount:0,indigestionScore:0,indigestionGrace:0,indigestion:false,enteritis:false,alert:null,hover:{x:0,y:0},shake:0,roulette:null,score:0,kills:0,sandbox,sandboxSpicySpawn:false,seenBosses:{},seenNotices:{}}};
 buildMap=function(){const mapPx=Math.max(180,Math.min(W-18,H-18)),o={x:(W-mapPx)/2,y:(H-mapPx)/2};gridSize=mapPx/18;const p=(c,r)=>({x:o.x+(c+.5)*gridSize,y:o.y+(r+.5)*gridSize});const nodes=[{x:o.x-gridSize*.5,y:p(0,2).y},p(16,2),p(16,5),p(1,5),p(1,8),p(16,8),p(16,11),p(1,11),p(1,14),p(16,14),p(16,17),{x:p(16,17).x,y:o.y+18.32*gridSize}];path=[];for(let s=0;s<nodes.length-1;s++){const a=nodes[s],b=nodes[s+1],n=Math.max(2,Math.ceil(Math.hypot(b.x-a.x,b.y-a.y)/(gridSize*.2)));for(let i=0;i<n;i++){const q=i/n;path.push({x:a.x+(b.x-a.x)*q,y:a.y+(b.y-a.y)*q})}}path.push(nodes.at(-1));cells=[];trackCells=[];for(let r=0;r<18;r++)for(let c=0;c<18;c++){const z={...p(c,r),size:gridSize,col:c,row:r,used:false};(distToPathRaw(z.x,z.y).d<gridSize*.43?trackCells:cells).push(z)}};
@@ -1725,9 +1731,8 @@ function r8ShowRoundIntro(round,{sandbox=false,actual=false}={}){
   const boss=BOSS_SCHEDULE.find(item=>item.round===round);
   if(boss)return r8RenderNamedIntro(boss.type,' 보스가 등장합니다.');
   if(R8_EVENT_TEXT[round]){r8RenderIntroText(R8_EVENT_TEXT[round]);return true}
-  if(round<=5)r8RenderIntroText('탄수화물 영양소가 등장합니다.');
-  else if(round<=12)r8RenderIntroText('탄수화물과 단백질 영양소가 섞여 등장합니다.');
-  else r8RenderIntroText('상위 영양소와 보스가 섞여 등장합니다.');
+  const bossEra=BOSS_SCHEDULE.some(b=>b.round<=round&&ENEMY_DEFS[b.type]?.boss);
+  r8RenderIntroText(bossEra?'상위 영양소와 보스가 섞여 등장합니다.':'상위 영양소가 섞여 등장합니다.');
   return true;
 }
 
@@ -4013,19 +4018,14 @@ function banquetLeaderFloor(leader,clearance){
     a=b;start=i/n;
   }
   // Insufficient path before the exit: preserve progress/life-loss timing;
-  // the rendering-only fallback below separates the circles instead.
+  // keep the real path center even when there is no room to separate circles.
   if(floor>=1-1e-6)floor=leader.t;
   const spacing=cached||(leader.feastSpacing={});spacing.path=path;spacing.t=leader.t;spacing.radius=radius;spacing.floor=floor;return floor;
 }
-function banquetVisiblePosition(e,p){
-  if(!e.boss||e.type==='lastBanquet'||e.deploying||e.digesting)return p;
-  const leader=S.feastLeaders?.get(banquetOrigin(e));if(!leader||leader.dead)return p;
-  const c=perfPosition(leader),radius=29*(leader.size+e.size*v15EnemyArtScale(e))+3,dx=p.x-c.x,dy=p.y-c.y,d2=dx*dx+dy*dy;
-  if(d2>=radius*radius-1e-6)return p;
-  let ux=dx,uy=dy,length=Math.sqrt(d2);
-  if(length<1e-6){const next=pointAt(Math.min(1,leader.t+.001));ux=next.x-c.x;uy=next.y-c.y;length=Math.hypot(ux,uy)||1;if(!ux&&!uy)uy=1}
-  const visible=e.feastVisible||(e.feastVisible={x:0,y:0});visible.x=c.x+ux/length*radius;visible.y=c.y+uy/length*radius;return visible;
-}
+// Movement/knockback floors already operate on path progress. Never push a
+// sprite sideways to separate circles: that disconnects it from its real target.
+function banquetVisiblePosition(e,p){return p}
+
 function banquetRemainsFloor(e,from){
   const sites=S.gluttonRemains?.get(banquetOrigin(e));if(!sites)return 0;
   let lo=0,hi=sites.length;
@@ -4415,9 +4415,19 @@ r3AudioTickets.feast=r6AudioTickets.feast=interactionAudio.tokens.feast=0;r7Audi
 applyVolume=function(){masterVolume=r7SafeVolume(masterVolume,.3);for(const track of Object.keys(audio))r7SetAudioVolume(track,track===interactionAudio.track?masterVolume:0);return masterVolume};
 const v13Enqueue=enqueueRound;
 enqueueRound=function(...args){S.feastLeaders=null;const result=v13Enqueue(...args);if((args[0]??S.round)>=111&&interactionAudio.track!=='feast')switchBgm('game');return result};
+const sandboxMinimize=document.createElement('button');
+sandboxMinimize.id='sandboxMinimize';sandboxMinimize.type='button';sandboxMinimize.setAttribute('aria-controls','sandboxTools');
+ui.sandboxTools.querySelector('.sandboxHead').appendChild(sandboxMinimize);
+function setSandboxMinimized(minimized){
+  ui.sandboxTools.classList.toggle('isMinimized',!!minimized);
+  sandboxMinimize.textContent=minimized?'+':'−';sandboxMinimize.setAttribute('aria-expanded',String(!minimized));
+  sandboxMinimize.setAttribute('aria-label',minimized?'소환 패널 펼치기':'소환 패널 접기');
+}
+sandboxMinimize.onclick=()=>{if(S.sandbox)setSandboxMinimized(!ui.sandboxTools.classList.contains('isMinimized'))};
+setSandboxMinimized(false);
 const v13Enter=enterGame,v13Restart=restartGame;
-enterGame=function(...args){v13SelectedEnemy=v13Panel=null;v13Enter(...args);v13MultiBuild(false);S.selectedBuild=S.selectedTower=null;showUnselectedInfo();v13SelectionButton();updateUI(true)};
-restartGame=function(...args){v13SelectedEnemy=v13Panel=null;v13Restart(...args);v13MultiBuild(false);S.selectedBuild=S.selectedTower=null;showUnselectedInfo();switchBgm('game');v13SelectionButton();updateUI(true)};
+enterGame=function(...args){v13SelectedEnemy=v13Panel=null;v13Enter(...args);setSandboxMinimized(false);v13MultiBuild(false);S.selectedBuild=S.selectedTower=null;showUnselectedInfo();v13SelectionButton();updateUI(true)};
+restartGame=function(...args){v13SelectedEnemy=v13Panel=null;v13Restart(...args);setSandboxMinimized(false);v13MultiBuild(false);S.selectedBuild=S.selectedTower=null;showUnselectedInfo();switchBgm('game');v13SelectionButton();updateUI(true)};
 const v13Style=document.createElement('style');v13Style.textContent='#cancelSelection{display:block;width:100%;margin:12px 0 3px;padding:10px;border:1px solid #f399a1;border-radius:8px;background:#9a3048;color:#fff;font-weight:800;cursor:pointer}#info .upgrade:disabled{opacity:.48;cursor:not-allowed}';document.head.append(v13Style);
 buildTowerPanel();updateUI(true);
 
@@ -4428,10 +4438,25 @@ const V14_COURSE_TYPES=Object.freeze([
 ]);
 const v14RoundScale=round=>round>=112?1+.05*(round-112):1;
 
+// Four ordinary waves: composition/density only; no new event or global stats.
+const DENSE_ROUNDS=Object.freeze({
+  26:{normal:64,bosses:[]},
+  46:{normal:72,bosses:['hamburger','hamburger','spicyHamburger','pizza','pizza']},
+  66:{normal:90,bosses:['pizza','pizza','pizza','spicyPizza','spicyOysterBoss','spicyOysterBoss','chicken','chicken']},
+  86:{normal:112,bosses:['spicyOysterBoss','spicyOysterBoss','spicyPizza','spicyPizza','chicken','chicken','chicken','spicyChicken','spicyChicken','malatang','malatang']}
+});
+function denseRoundEntries(round){
+  const config=DENSE_ROUNDS[round],kinds=['starch','protein','fatblob'];
+  const entry=(type,delay,spicy=false)=>({...r6Entry(type,round,delay*R7_LEGACY_TIME,spicy),delay,r7TimeNormalized:true});
+  const normal=Array.from({length:config.normal},(_,i)=>entry(kinds[(i+round)%3],.25,i%5===4));
+  const bosses=config.bosses.map(type=>entry(type,.4,!!ENEMY_DEFS[type].spicy));
+  return r6Interleave(normal,bosses,round);
+}
 /* 112+ uses one fixed full-course order. Difficulty rises through speed and the
  * Last Banquet's HP rather than by changing the course contents. */
 const v14RoundEntries=makeRoundEntries;
 makeRoundEntries=function(round){
+  if(DENSE_ROUNDS[round])return denseRoundEntries(round);
   if(round===110)return v14RoundEntries(109).map(entry=>({...entry,wave:110,enteritis:true}));
   if(round<112)return v14RoundEntries(round);
   return V14_COURSE_TYPES.map((type,index)=>({
