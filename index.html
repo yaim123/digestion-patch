@@ -1561,7 +1561,7 @@ r5CannonBossTarget=function(t,range){r6PruneKnockMap(t);const counts=r6KnockMap(
 r5CannonKick=function(t,target){const counts=r6KnockMap(t),used=counts.get(target.r6Id)||0,now=S.compatElapsed||0;r5CannonFire(t,target,t.level>=10?2:1.5,false);if(used<2&&(target.knockImmuneUntil||0)<=now){const huge=['malatang','spicyMalatang','gluttonKing','lastBanquet'].includes(target.type);r5Backtrack(target,t.level>=10?(huge?3:5):(huge?1:3));target.knockImmuneUntil=now+10;counts.set(target.r6Id,used+1)}t.cannonKickCD=8};
 r5ProcessCannonEvents=function(){const events=S.cannonEvents||[],now=S.compatElapsed||0;let write=0;for(let i=0;i<events.length;i++){const event=events[i];if(event.due>now){events[write++]=event;continue}if(!S.towers.includes(event.source))continue;if(event.kind==='blast')r5CannonArea(event.source,event.x,event.y,event.raw,event.radius,null);else if(event.kind==='salvo'){const target=findTarget(event.source,event.source.range*(1+getBuff(event.source).range));if(target)r5CannonFire(event.source,target,.40,false)}}events.length=write};
 r5UpdateCannon=function(t,buff,legacyDt){t.cannonKickCD=Math.max(0,(t.cannonKickCD||0)-legacyDt);r6PruneKnockMap(t);const range=t.range*(1+buff.range);if(t.level>=9&&t.cannonKickCD<=0){const boss=r5CannonBossTarget(t,range);if(boss){r5CannonKick(t,boss);t.cool=Math.max(.1,t.rate/(1+buff.rate));return}}if(t.cool>0)return;const target=findTarget(t,range);if(!target)return;t.cool=Math.max(.1,t.rate/(1+buff.rate));t.cannonShots=(t.cannonShots||0)+1;r5CannonFire(t,target,1,true);if(t.level>=7&&t.cannonShots%4===0){const q=S.cannonEvents||(S.cannonEvents=[]),now=S.compatElapsed||0;q.push({kind:'salvo',due:now+.12,source:t});q.push({kind:'salvo',due:now+.24,source:t})}};
-update=function(dt){if(S.gameOver||S.paused)return;const cannonShotStart=S.shots.length,cannonFxStart=S.fx.length;const gameDt=Math.max(0,Number(dt)||0)*Math.max(1,Number(S.speed)||1),legacyDt=r7ToLegacySeconds(gameDt);S.elapsed+=gameDt;S.compatElapsed=(S.compatElapsed||0)+legacyDt;S.skillCD=Math.max(0,S.skillCD-legacyDt);S.globalStun=Math.max(0,S.globalStun-legacyDt);S.globalBuff=Math.max(0,S.globalBuff-legacyDt);S.globalAcid=Math.max(0,S.globalAcid-legacyDt);S.discount=Math.max(0,S.discount-legacyDt/45*.2);S.shake=Math.max(0,S.shake-legacyDt);if(S.roulette&&(S.roulette.timer-=legacyDt)<=0)S.roulette=null;if(S.alert&&(S.alert.timer-=legacyDt)<=0)S.alert=null;if(!S.running&&S.autoStart&&S.roundReady&&(S.autoTimer-=legacyDt)<=0)startRound();if(S.banquetPrompt||S.paused)return;if(S.running){S.gold+=2*legacyDt;S.spawnTimer-=gameDt;if(S.spawnQueue.length&&S.spawnTimer<=0){const entry=S.spawnQueue.shift();spawnOne(entry);S.spawnTimer+=Math.max(.25,entry.delay??.25)}}for(const e of S.enemies){if(e.dead)continue;e.fieldAge=(e.fieldAge||0)+gameDt;e.stun=Math.max(0,e.stun-legacyDt);e.slow=Math.max(0,e.slow-legacyDt);e.blocked=Math.max(0,(e.blocked||0)-legacyDt);e.splitFlash=Math.max(0,(e.splitFlash||0)-legacyDt);e.bossBadge=Math.max(0,(e.bossBadge||0)-legacyDt);e.vulnerable=Math.max(0,(e.vulnerable||0)-legacyDt);e.emulsified=Math.max(0,(e.emulsified||0)-legacyDt);e.enteritisPurify=Math.max(0,(e.enteritisPurify||0)-legacyDt);if(e.digesting){e.digesting-=legacyDt;const mouth=e.digestSource;e.digestX+=(mouth.x-e.digestX)*Math.min(1,legacyDt*2.3);e.digestY+=(mouth.y-e.digestY)*Math.min(1,legacyDt*2.3);if(e.digesting<=0)r3CompleteDigestion(e);continue}if(S.globalStun>0){if(e.boss)r4ApplySlow(e,.8,S.globalStun,'medicine');else e.stun=Math.max(e.stun,S.globalStun)}if(e.stun>0||e.blocked>0)continue;const purified=e.enteritisPurify>0||purifiedByProbiotic(e),enteritisSpeed=e.enteritis&&!purified?1.5:1;e.t+=e.speed*roundMult().speed*enteritisSpeed*r4SlowMultiplier(e)*legacyDt/7600;if(e.t>=1){recordEnemyEscaped(e);e.dead=true;e.deathResolved=true;if(!S.sandbox){S.lives-=lifeLoss(e);if(S.lives<=0)return gameOver()}}}banquetAdvance();absorbBeforeCombat();perfBeginCombat();for(const t of S.towers){const d=TOWER_DEFS[t.type],buff=getBuff(t);t.cool-=legacyDt;if(t.type==='atp'){if(S.running){t.farm+=legacyDt;if(t.farm>=4){t.farm=0;S.gold+=28*(1+(t.level-1)*.55)*(t.level===5?3:1);burst(t.x,t.y,'#ffe27c',7)}}continue}if(t.type==='mouth'&&t.level===6){cadenceDigestStep(t,legacyDt);continue}if(t.type==='digestCannon'){r5UpdateCannon(t,buff,legacyDt);continue}if(t.type==='digestionKing'){kingAttackStep(t,buff);continue}cadenceAttackStep(t,buff,d);}r5ProcessCannonEvents();for(const e of S.enemies)if(!e.dead&&e.hp<=0)resolveDeath(e);let ew=0;for(const e of S.enemies)if(!e.dead)S.enemies[ew++]=e;S.enemies.length=ew;let sw=0;for(let si=0;si<S.shots.length;si++){const s=S.shots[si];if(si<cannonShotStart)s.ttl-=legacyDt;if(s.ttl>0)S.shots[sw++]=s}S.shots.length=sw;let fw=0;for(let fi=0;fi<S.fx.length;fi++){const f=S.fx[fi];if(fi<cannonFxStart)f.life-=legacyDt;f.x+=f.vx*legacyDt;f.y+=f.vy*legacyDt;if(f.life>0)S.fx[fw++]=f}S.fx.length=fw;perf.combat=false;if(S.running&&!(S.banquetDeployments||[]).length&&!S.spawnQueue.length&&!S.enemies.length&&!(S.cannonEvents||[]).length)nextRound();updateIndigestion(gameDt)};
+update=function(dt){if(S.gameOver||S.paused)return;const cannonShotStart=S.shots.length,cannonFxStart=S.fx.length;const gameDt=Math.max(0,Number(dt)||0)*Math.max(1,Number(S.speed)||1),legacyDt=r7ToLegacySeconds(gameDt);S.elapsed+=gameDt;S.compatElapsed=(S.compatElapsed||0)+legacyDt;S.skillCD=Math.max(0,S.skillCD-legacyDt);S.globalStun=Math.max(0,S.globalStun-legacyDt);S.globalBuff=Math.max(0,S.globalBuff-legacyDt);S.globalAcid=Math.max(0,S.globalAcid-legacyDt);S.discount=Math.max(0,S.discount-legacyDt/45*.2);S.shake=Math.max(0,S.shake-legacyDt);if(S.roulette&&(S.roulette.timer-=legacyDt)<=0)S.roulette=null;if(S.alert&&(S.alert.timer-=legacyDt)<=0)S.alert=null;if(!S.running&&S.autoStart&&S.roundReady&&(S.autoTimer-=legacyDt)<=0)startRound();if(S.banquetPrompt||S.paused)return;if(S.running){S.gold+=2*legacyDt;S.spawnTimer-=gameDt;if(S.spawnQueue.length&&S.spawnTimer<=0){const entry=S.spawnQueue.shift();spawnOne(entry);S.spawnTimer+=Math.max(.25,entry.delay??.25)}}for(const e of S.enemies){if(e.dead)continue;e.fieldAge=(e.fieldAge||0)+gameDt;e.stun=Math.max(0,e.stun-legacyDt);e.slow=Math.max(0,e.slow-legacyDt);e.blocked=Math.max(0,(e.blocked||0)-legacyDt);e.splitFlash=Math.max(0,(e.splitFlash||0)-legacyDt);e.bossBadge=Math.max(0,(e.bossBadge||0)-legacyDt);e.vulnerable=Math.max(0,(e.vulnerable||0)-legacyDt);e.emulsified=Math.max(0,(e.emulsified||0)-legacyDt);e.enteritisPurify=Math.max(0,(e.enteritisPurify||0)-legacyDt);if(e.digesting){e.digesting-=legacyDt;const mouth=e.digestSource;e.digestX+=(mouth.x-e.digestX)*Math.min(1,legacyDt*2.3);e.digestY+=(mouth.y-e.digestY)*Math.min(1,legacyDt*2.3);if(e.digesting<=0)r3CompleteDigestion(e);continue}if(S.globalStun>0){if(e.boss)r4ApplySlow(e,.8,S.globalStun,'medicine');else e.stun=Math.max(e.stun,S.globalStun)}if(e.stun>0||e.blocked>0)continue;const purified=e.enteritisPurify>0||purifiedByProbiotic(e),enteritisSpeed=e.enteritis&&!purified?1.5:1;e.t+=e.speed*roundMult().speed*enteritisSpeed*r4SlowMultiplier(e)*legacyDt/7600;if(e.t>=1){recordEnemyEscaped(e);e.dead=true;e.deathResolved=true;if(!S.sandbox){S.lives-=lifeLoss(e);if(S.lives<=0)return gameOver()}}}banquetAdvance();absorbBeforeCombat();perfBeginCombat();for(const t of S.towers){const d=TOWER_DEFS[t.type],buff=getBuff(t);t.cool-=legacyDt;if(t.type==='atp'){if(S.running){t.farm+=legacyDt;if(t.farm>=4){t.farm=0;S.gold+=28*(1+(t.level-1)*.55)*(t.level===5?3:1);burst(t.x,t.y,'#ffe27c',7)}}continue}if(t.type==='mouth'&&t.level===6){cadenceDigestStep(t,legacyDt);continue}if(t.type==='digestCannon'){r5UpdateCannon(t,buff,legacyDt);continue}if(t.type==='digestionKing'){kingAttackStep(t,buff);continue}cadenceAttackStep(t,buff,d);}r5ProcessCannonEvents();labProcessProjectiles();for(const e of S.enemies)if(!e.dead&&e.hp<=0)resolveDeath(e);let ew=0;for(const e of S.enemies)if(!e.dead)S.enemies[ew++]=e;S.enemies.length=ew;let sw=0;for(let si=0;si<S.shots.length;si++){const s=S.shots[si];if(si<cannonShotStart)s.ttl-=legacyDt;if(s.ttl>0)S.shots[sw++]=s}S.shots.length=sw;let fw=0;for(let fi=0;fi<S.fx.length;fi++){const f=S.fx[fi];if(fi<cannonFxStart)f.life-=legacyDt;f.x+=f.vx*legacyDt;f.y+=f.vy*legacyDt;if(f.life>0)S.fx[fw++]=f}S.fx.length=fw;perf.combat=false;if(S.running&&!(S.banquetDeployments||[]).length&&!S.spawnQueue.length&&!S.enemies.length&&!(S.cannonEvents||[]).length&&!(S.labProjectiles||[]).length)nextRound();updateIndigestion(gameDt)};
 
 /* Build / selected-tower text: Lv6 remains a hidden fifth-level upgrade, while
    automatic probiotic growth keeps its own wording. */
@@ -1964,7 +1964,7 @@ r5CannonArea=function(t,x,y,raw,radius,direct){
     if(distance>radiusPx)continue;
     let factor=1;
     if(e!==direct){const near=t.level>=3?.75:.60,far=t.level>=3?.40:.30;factor=near-(near-far)*(distance/radiusPx)}
-    const bossMultiplier=e.boss?1+.05*Math.max(0,(t.level||1)-1):1;
+    const bossMultiplier=e.boss?1+.05*Math.max(0,(t.level||1)-1)+labAmp(e)/100:1;
     e.hp-=r5DamageAmount(e,raw*factor*bossMultiplier,t);e.lastHitType='digestCannon';e.hit=.11;absorbCommit(e);
     if(e.hp<=0&&(Number.isInteger(e.courseIndex)||e.feastSummonToken))lineageDeath=true;
   }
@@ -2577,11 +2577,11 @@ function perfToggle(el, name, on) {
 }
 refreshBuildButtons = function() {
   if (!perf.shop) perf.shop = [...ui.grid.querySelectorAll('.towerBtn[data-key]')];
-  let atp = 0, cannon = 0, villusOne = 0;const fusionOwned=new Set();
-  for (const t of S.towers) { if (t.type === 'atp') atp++; else if (t.type === 'digestCannon') cannon++; else if(t.type==='villus'&&t.level===1)villusOne++;else if(R3_FUSION[t.type])fusionOwned.add(t.type); }
+  let atp = 0, cannon = 0, villusOne = 0, labs = 0;const fusionOwned=new Set();
+  for (const t of S.towers) { if (t.type === 'atp') atp++; else if (t.type === 'digestCannon') cannon++; else if(t.type==='digestionLab') labs++; else if(t.type==='villus'&&t.level===1)villusOne++;else if(R3_FUSION[t.type])fusionOwned.add(t.type); }
   for (const button of perf.shop) {
     const type = button.dataset.key, d = TOWER_DEFS[type];
-    const limited = type === 'atp' ? atp >= 4 : type === 'digestCannon' ? cannon >= 3 : type==='villus'?villusOne>=2:fusionOwned.has(type);
+    const limited = type === 'atp' ? atp >= 4 : type === 'digestCannon' ? cannon >= 3 : type==='digestionLab'?labs>=3:type==='villus'?villusOne>=2:fusionOwned.has(type);
     const locked = limited || (!S.sandbox && S.gold < d.cost);
     perfSet(button, 'disabled', locked);
     perfSet(button, 'title', limited ? (type==='villus'?'Lv1 융털을 이미 최대 수량(2개) 보유 중입니다.':R3_FUSION[type]?'최대 1개 보유 중':r5LimitText(type)) : locked ? '생체 에너지가 부족합니다.' : '');
@@ -3351,7 +3351,7 @@ drawTowers=function(){
     }
     ctx.scale(visualScale,visualScale);
     if(t.type==='digestionKing'){r3Crusher(t);drawTowerGauge(t)}
-    else{const sprite=fullMapTowerSprite(t);ctx.drawImage(sprite.surface,-sprite.half,-sprite.half,sprite.surface.width/dpr,sprite.surface.height/dpr)}
+    else{if(t.type==='digestionLab'){const fit=Math.min(1,gridSize*.92/(40*visualScale));ctx.scale(fit,fit)}const sprite=fullMapTowerSprite(t);ctx.drawImage(sprite.surface,-sprite.half,-sprite.half,sprite.surface.width/dpr,sprite.surface.height/dpr)}
     ctx.restore();
   }
 };
@@ -4729,6 +4729,138 @@ resolveDeath=function(e){
   }finally{v14DeathParent=parent;v14RefreshLocks()}
 };
 
+
+/* Digestion laboratory: cached art, bounded projectiles, lazy per-source effects. */
+const LAB_STATS=Object.freeze({damage:[45,70,105,155,230,340,510,760,1120,1800],range:[5,5.2,5.4,5.6,6,6.2,6.5,6.9,7.3,8],interval:[.625,.60,.575,.55,.525,.5,.47,.44,.41,.36],splash:[.65,.7,.75,.8,.9,1,1.1,1.25,1.4,1.65],amp:[5,7,9,11,13,15,18,20,22,30],cost:[300,500,800,1200,2000,3500,6000,10000,20000],chance:[90,80,70,60,50,40,30,20,10]});
+TOWER_DEFS.digestionLab={name:'소화 실험실',short:'지원·범위 용액',color:'#78f2bb',icon:'⚗️',cost:600,range:5,rate:.9375,damage:45,type:'digestionLab',group:'지원',desc:'용액 범위 공격 · 보스 피해 증폭 5초 · 확률 연구 강화 · 최대 3개.',awaken:'최첨단 소화 연구소'};
+const labName=t=>t.level===10?'최첨단 소화 연구소':'소화 실험실';
+function labSetLevel(t,level){t.level=Math.max(1,Math.min(10,level));const i=t.level-1;t.damage=t.damageBase=LAB_STATS.damage[i];t.rangeTiles=LAB_STATS.range[i];t.range=t.rangeTiles*gridSize;t.rate=LAB_STATS.interval[i]*R7_LEGACY_TIME}
+const labCreate=createTower;
+createTower=function(type,...args){const t=labCreate(type,...args);if(type==='digestionLab'){t.labFailed=false;labSetLevel(t,1)}return t};
+const labLimited=r5Limited,labLimitText=r5LimitText;
+r5Limited=function(type){return type==='digestionLab'?S.towers.filter(t=>t.type===type).length>=3:labLimited(type)};
+r5LimitText=function(type){return type==='digestionLab'?'소화 실험실은 최대 3개입니다.':labLimitText(type)};
+const labUpgradeCost=upgradeCost;
+upgradeCost=function(t){if(t?.type!=='digestionLab')return labUpgradeCost(t);return S.sandbox||t.level>=10?0:Math.round(LAB_STATS.cost[t.level-1]*(1-(S.discount||0)))};
+function labChance(t){return t.level>=10?0:LAB_STATS.chance[t.level-1]+(t.labFailed?5:0)}
+const labUpgrade=upgradeTower;
+upgradeTower=function(t){
+ if(t?.type!=='digestionLab')return labUpgrade(t);
+ if(t!==S.selectedTower||!S.towers.includes(t)||t.level>=10)return;
+ const cost=S.sandbox?0:(v13Panel?.tower===t&&v13Panel.level===t.level?v13Panel.quote:upgradeCost(t));
+ if(!S.sandbox&&S.gold<cost){setMsg('생체 에너지가 부족합니다.');return}
+ if(!S.sandbox){S.gold-=cost;t.spent=(t.spent||0)+cost}
+ const success=S.sandbox||Math.random()*100<labChance(t);
+ if(success){labSetLevel(t,t.level+1);t.labFailed=false}else t.labFailed=true;
+ t.labReaction={start:S.elapsed,success,final:success&&t.level===10};showTowerInfo(t);refreshBuildButtons();
+ setMsg(success?(t.level===10?'최종 연구 성공! 최첨단 소화 연구소 완성!':'연구 성공!'):'연구 실패! 레벨 유지 · 다음 성공 확률 +5%p (최대 보정)');
+};
+const labSell=sellSelected;
+sellSelected=function(){const t=S.selectedTower;labSell();if(t?.type==='digestionLab'&&!S.towers.includes(t))t.labRetired=true};ui.sell.onclick=sellSelected;
+// Three live sources at most. Expire on demand, never scan every enemy per frame.
+function labAmp(e){
+ if(!e?.boss||!e.labAmps)return 0;let best=0,maxed=0;
+ for(const [source,a] of e.labAmps){if(a.until<=S.elapsed||source.labRetired){e.labAmps.delete(source);continue}best=Math.max(best,a.percent);if(a.level===10)maxed++}
+ return maxed?LAB_STATS.amp[9]+10*(Math.min(3,maxed)-1):best;
+}
+function labApplyAmp(e,source,level){
+ if(!e.boss||e.dead||e.hp<=0||e.feastLocked||e.deploying||source.labRetired)return;
+ labAmp(e);const amps=e.labAmps||(e.labAmps=new Map()),old=amps.get(source),percent=LAB_STATS.amp[level-1];
+ if(old&&old.percent>percent)return; // Older projectile cannot downgrade newer effect.
+ amps.set(source,{level,percent,until:S.elapsed+5});
+}
+let labExcludeAmp=false;
+const labBossMultiplier=r9BossMultiplier;
+r9BossMultiplier=function(t,e){return labBossMultiplier(t,e)+(labExcludeAmp?0:labAmp(e)/100)};
+// Legacy awakening bursts contain max-HP damage; do not amplify special formulas.
+const labAwaken=awakenTower;
+awakenTower=function(t){const previous=labExcludeAmp;labExcludeAmp=true;try{return labAwaken(t)}finally{labExcludeAmp=previous}};
+const labDeal=deal;
+deal=function(e,raw,t){
+ if(t.type!=='digestionLab')return labDeal(e,raw,t);
+ if(!e||e.dead||e.digesting||e.deploying||e.feastLocked||e.hp<=0)return;
+ (S.labProjectiles||(S.labProjectiles=[])).push({source:t,level:t.level,raw,target:e,start:S.elapsed,due:S.elapsed+.22,fromX:t.x/W,fromY:t.y/H,progress:e.t});
+};
+function labImpact(shot){
+ const progress=shot.target.dead?shot.progress:shot.target.t,p=pointAt(progress),radius=LAB_STATS.splash[shot.level-1]*gridSize;
+ const attack={type:'digestionLab',level:shot.level,x:shot.source.x,y:shot.source.y},hits=[];
+ for(const e of perfNearby(p.x,p.y,radius)){
+  if(e.dead||e.digesting||e.deploying||e.feastLocked||e.hp<=0)continue;
+  const q=perfPosition(e);if(perfWithin(q.x-p.x,q.y-p.y,radius))hits.push(e);
+ }
+ for(const e of hits){const hp=e.hp,damage=r9Hit(e,shot.raw,attack);if(damage>0&&e.hp<hp)labApplyAmp(e,shot.source,shot.level)}
+ const splashes=S.labSplashes||(S.labSplashes=[]);if(splashes.length<12)splashes.push({progress,start:S.elapsed,level:shot.level});
+}
+function labProcessProjectiles(){
+ const shots=S.labProjectiles;if(shots?.length){let write=0;for(const shot of shots){if(S.elapsed>=shot.due)labImpact(shot);else shots[write++]=shot}shots.length=write}
+ const splashes=S.labSplashes;if(splashes?.length){let write=0;for(const s of splashes)if(S.elapsed-s.start<.35)splashes[write++]=s;splashes.length=write}
+}
+const labPanel=buildTowerPanel;
+buildTowerPanel=function(){
+ labPanel();const d=TOWER_DEFS.digestionLab,b=document.createElement('button');b.type='button';b.className='towerBtn';b.dataset.key='digestionLab';
+ b.innerHTML=`<canvas class="towerPreview" width="42" height="34" aria-hidden="true"></canvas><div class="towerName">${d.name}</div><div class="towerTag">${d.short}</div><div class="towerMeta">600 생체 에너지</div><div class="towerDesc">${d.desc}</div>`;
+ ui.grid.querySelector('[data-key="probiotic"]').after(b);r3DrawTowerPreview(b.querySelector('canvas'),'digestionLab');
+ b.onclick=()=>{if(r5Limited('digestionLab')){setMsg(r5LimitText('digestionLab'));return}if(!S.sandbox&&S.gold<600){setMsg('생체 에너지가 부족합니다.');return}S.selectedBuild='digestionLab';S.selectedTower=null;ui.sell.disabled=true;refreshBuildButtons();showBuildInfo('digestionLab')};
+ perf.shop=null;refreshBuildButtons();if(ml.active)mlPrices();mlSync();
+};
+const labBuildInfo=showBuildInfo;
+showBuildInfo=function(key){
+ if(key!=='digestionLab')return labBuildInfo(key);v13SelectedEnemy=null;v13Panel=null;
+ if(S.selectedBuild!==key){showUnselectedInfo();v13SelectionButton();return}
+ ui.info.innerHTML='<div class="infoTitle">⚗️ 소화 실험실</div><p>건설 600 생체 에너지 · 최대 3개</p><p>모든 영양소에 용액 범위 공격. 피해 45 · 반경 0.65타일 · 사거리 5타일 · 간격 0.625초.</p><p>맞은 보스는 5초 동안 모든 타워로부터 받는 피해 +5%. 확률 강화로 Lv10 최첨단 소화 연구소까지 성장합니다.</p>';
+ v13SelectionButton();ml.detailScroll.scrollTop=0;mlSync();
+};
+const labInfo=showTowerInfo;
+showTowerInfo=function(t){
+ if(t?.type!=='digestionLab')return labInfo(t);
+ S.selectedTower=t;S.selectedBuild=null;v13SelectedEnemy=null;ui.sell.disabled=false;
+ const i=t.level-1,cost=upgradeCost(t),row=(a,b)=>`<div class="infoRow"><span>${a}</span><span>${b}</span></div>`,modes={front:'가장 앞',back:'가장 뒤',strong:'HP 높음',weak:'HP 낮음',boss:'보스 우선'};
+ ui.info.innerHTML=`<div class="infoTitle" style="color:#78f2bb">⚗️ ${labName(t)} · Lv${t.level}</div><canvas id="labDetailPreview" width="88" height="80" style="display:block;margin:4px auto"></canvas>`+
+ row('범위 공격 피해',t.damage.toLocaleString())+row('공격 범위 (반경)',LAB_STATS.splash[i]+'타일')+row('사거리',t.rangeTiles+'타일')+row('공격 간격',LAB_STATS.interval[i]+'게임초')+row('보스 피해 증폭','+'+LAB_STATS.amp[i]+'%')+row('지속 시간','5게임초 · 재적중 갱신')+row('설치 제한','최대 3개')+
+ (t.level<10?row('현재 성공 확률',S.sandbox?'100% (연습 모드)':labChance(t)+'%')+row('실패 보정',t.labFailed?'+5%p 적용 (최대)':'없음')+`<button class="upgrade" id="upgBtn"><div class="uhead">연구 강화 (성공 확률 ${S.sandbox?'100':labChance(t)}%)</div><div class="ucost">${S.sandbox?'∞':cost.toLocaleString()} 생체 에너지</div></button>`:'<div class="awaken">최첨단 소화 연구소 완성! · Lv10</div>')+
+ `<div class="targetBox"><div class="targetTitle">🎯 타겟 우선순위</div><div class="targetBtns">${Object.entries(modes).map(([m,label])=>`<button class="targetBtn ${t.targetMode===m?'active':''}" data-target="${m}">${label}</button>`).join('')}</div></div><p>실험실 효과는 최고값만 적용. Lv10은 1/2/3개 적중 시 30/40/50%. 다른 타워의 보스 피해 증가와 합산합니다. 최대 HP 비례 특수 피해는 제외합니다.</p><p>실패해도 비용은 소모되며 레벨은 유지됩니다. 판매 시 해당 실험실의 증폭은 종료됩니다.</p>`;
+ const c=document.getElementById('labDetailPreview').getContext('2d');c.translate(44,40);labPaint(c,t.level,1.8);
+ const up=document.getElementById('upgBtn');if(up)up.onclick=()=>upgradeTower(t);
+ ui.info.querySelectorAll('[data-target]').forEach(b=>b.onclick=()=>{t.targetMode=b.dataset.target;showTowerInfo(t)});
+ v13Panel={tower:t,level:t.level,sandbox:S.sandbox,up,cost:up?.querySelector('.ucost'),quote:cost};v13RefreshPanel();v13SelectionButton();refreshBuildButtons();mlSync();
+};
+// Reference-inspired silhouettes fit within +/-19 pixels including all level lights.
+function labPaint(c,level,scale=1){
+ c.save();c.scale(scale,scale);c.lineJoin='round';c.lineCap='round';c.lineWidth=1.2;
+ const ellipse=(x,y,rx,ry,fill,stroke)=>{c.beginPath();c.ellipse(x,y,rx,ry,0,0,TAU);c.fillStyle=fill;c.fill();if(stroke){c.strokeStyle=stroke;c.stroke()}};
+ const tube=(x,y,w,h)=>{c.fillStyle='#163b4e';c.strokeStyle='#9cf7f5';c.fillRect(x,y,w,h);c.strokeRect(x,y,w,h);c.fillStyle='#b9f522';c.fillRect(x+1,y+h*.38,w-2,h*.58);c.fillStyle='#736782';c.fillRect(x-1,y-2,w+2,3);c.fillStyle='#faffcd';c.fillRect(x+1,y+h*.45,1,h*.25)};
+ if(level<5){
+  ellipse(0,2,16,16,'#14263c','#62e2dc');
+  c.beginPath();c.moveTo(-4,-10);c.lineTo(-4,-3);c.lineTo(-10,10);c.quadraticCurveTo(0,15,10,10);c.lineTo(4,-3);c.lineTo(4,-10);c.closePath();c.fillStyle='#19414d';c.fill();c.strokeStyle='#bdffff';c.lineWidth=1.8;c.stroke();
+  c.beginPath();c.moveTo(-5,2);c.lineTo(-8,9);c.quadraticCurveTo(0,12,8,9);c.lineTo(5,2);c.closePath();c.fillStyle='#c2f726';c.fill();ellipse(-1,6,2,1.4,'#faffc1');
+  c.strokeStyle='#bafffa';c.beginPath();c.moveTo(-5,-10);c.lineTo(5,-10);c.stroke();for(let i=0;i<level;i++)ellipse(9-i*3,-8-i%2*3,1.3,1.3,'#d6ff48');
+ }else{
+  ellipse(0,12,17,5,'#55536d','#161a32');ellipse(0,9,17,4,'#8b819d','#181e36');c.fillStyle='#5cf4dd';c.fillRect(-12,12,8,2);c.fillRect(5,12,8,2);
+  if(level<8){
+   c.beginPath();c.moveTo(-3,-13);c.lineTo(-3,-7);c.lineTo(-9,5);c.quadraticCurveTo(0,10,9,5);c.lineTo(3,-7);c.lineTo(3,-13);c.closePath();c.fillStyle='#1b4e59';c.fill();c.strokeStyle='#a4ffff';c.stroke();
+   c.beginPath();c.moveTo(-5,-1);c.lineTo(-7,5);c.quadraticCurveTo(0,8,7,5);c.lineTo(5,-1);c.closePath();c.fillStyle='#baff28';c.fill();tube(-14,0,4,9);if(level>=6)tube(10,-3,4,11);
+   c.strokeStyle='#a7a0b9';c.lineWidth=3;c.beginPath();c.moveTo(11,6);c.lineTo(13,-11);c.lineTo(6,-11);c.stroke();ellipse(5,-11,2,2,'#73ffdf','#363049');if(level===7)ellipse(-1,2,2,2,'#efff95');
+  }else{
+   tube(-8,-9,16,17);ellipse(0,-9,8,3,'#78718c','#27213e');ellipse(0,8,9,3,'#514d67','#252038');c.fillStyle='#aefa25';c.fillRect(-6,-2,12,8);ellipse(0,-2,6,2,'#d6ff65');ellipse(-2,3,1.8,1.8,'#f1ffc7');tube(-15,-4,4,12);tube(11,1,4,9);
+   c.strokeStyle='#59e9d8';c.lineWidth=2.5;c.beginPath();c.moveTo(-12,-5);c.bezierCurveTo(-16,-17,-3,-19,-4,-9);c.stroke();
+   if(level>=9){c.strokeStyle='#a098b5';c.lineWidth=3;c.beginPath();c.moveTo(5,-9);c.lineTo(9,-16);c.lineTo(16,-10);c.stroke();ellipse(9,-16,2,2,'#7cfbe5','#332849');tube(13,-9,4,5)}
+   if(level===10){c.strokeStyle='#b9accd';c.lineWidth=3;c.beginPath();c.moveTo(-11,5);c.lineTo(-17,0);c.lineTo(-13,-9);c.stroke();ellipse(-17,0,1.8,1.8,'#5bffdd');c.strokeStyle='#5ffff0';c.lineWidth=1.6;c.strokeRect(-5,-12,10,4);tube(6,3,3,8)}
+  }ellipse(0,12,3.5,3.5,'#172840','#90fff4');ellipse(0,12,1.6,2.2,'#64f9e6');
+ }for(let i=0;i<10;i++){c.fillStyle=i<level?(level===10?'#e5ff74':'#6cf7c4'):'#41415d';c.fillRect(-14+i*3,18,2,1)}c.restore();
+}
+const labCore=r4TowerCore;
+r4TowerCore=function(c,type,level,scale=1){if(type==='digestionLab')return labPaint(c,level,scale);return labCore(c,type,level,scale)};
+const labGauge=drawTowerGauge;
+drawTowerGauge=function(t){if(t.type!=='digestionLab')return labGauge(t)};
+const labDrawShots=drawShots;
+drawShots=function(){
+ labDrawShots();ctx.save();
+ for(const shot of S.labProjectiles||[]){const f=Math.max(0,Math.min(1,(S.elapsed-shot.start)/.22)),p=pointAt(shot.target.dead?shot.progress:shot.target.t),x=shot.fromX*W+(p.x-shot.fromX*W)*f,y=shot.fromY*H+(p.y-shot.fromY*H)*f-Math.sin(f*Math.PI)*gridSize*.3,r=Math.min(gridSize*.14,3+shot.level*.25);ctx.fillStyle='#b9fa35';ctx.strokeStyle='#56e7d6';ctx.lineWidth=1.2;ctx.beginPath();ctx.arc(x,y,r,0,TAU);ctx.fill();ctx.stroke();ctx.fillStyle='#f5ffd9';ctx.beginPath();ctx.arc(x-r*.3,y-r*.3,r*.28,0,TAU);ctx.fill()}
+ for(const s of S.labSplashes||[]){const f=(S.elapsed-s.start)/.35,p=pointAt(s.progress),radius=LAB_STATS.splash[s.level-1]*gridSize;ctx.globalAlpha=(1-f)*.6;ctx.fillStyle='#80ed9b';ctx.beginPath();ctx.ellipse(p.x,p.y,radius*(.35+.65*f),radius*(.2+.4*f),0,0,TAU);ctx.fill();ctx.strokeStyle='#bbf85a';ctx.lineWidth=1.4;for(let i=0;i<(s.level>=8?7:4);i++){const a=i*2.4;ctx.beginPath();ctx.arc(p.x+Math.cos(a)*radius*f,p.y+Math.sin(a)*radius*f,Math.max(.5,(2+s.level*.16)*(1-f)),0,TAU);ctx.stroke()}}
+ for(const t of S.towers){const v=t.labReaction;if(!v)continue;const f=(S.elapsed-v.start)/.65;if(f>=1){t.labReaction=null;continue}const r=gridSize*.32;ctx.globalAlpha=(1-f)*.85;ctx.strokeStyle=v.success?'#93ffe1':'#b1b6c8';ctx.lineWidth=v.final?2:1;for(let i=0;i<(v.final?8:4);i++){const a=i*TAU/(v.final?8:4),k=v.final?1-f:f;ctx.beginPath();ctx.arc(t.x+Math.cos(a)*r*k,t.y+Math.sin(a)*r*k,1.5,0,TAU);ctx.stroke()}}
+ ctx.restore();
+};
+buildTowerPanel();
 
 backgroundInstall();
 </script>
